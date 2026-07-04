@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATHE TH – Arithmetische Folgen</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#eef3f6;
+color:#2b2b2b;
+}
+
+header{
+background:white;
+padding:25px 40px;
+border-bottom:4px solid #0b8d92;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+header h1{
+margin:0;
+font-size:34px;
+color:#0b8d92;
+}
+
+header h2{
+margin:5px 0 0 0;
+font-size:22px;
+font-weight:400;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:35px;
+}
+
+.card{
+
+background:white;
+padding:30px;
+margin-bottom:30px;
+border-radius:14px;
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+h3{
+
+color:#0b8d92;
+margin-top:0;
+
+}
+
+input{
+
+font-size:20px;
+padding:8px;
+width:120px;
+margin-top:15px;
+
+}
+
+button{
+
+margin-top:20px;
+padding:12px 24px;
+background:#0b8d92;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:17px;
+
+}
+
+button:hover{
+
+background:#09787c;
+
+}
+
+.ok{
+
+color:green;
+font-weight:bold;
+margin-top:15px;
+
+}
+
+.fail{
+
+color:#cc0000;
+font-weight:bold;
+margin-top:15px;
+
+}
+
+#score{
+
+background:white;
+padding:20px;
+border-radius:12px;
+font-size:24px;
+text-align:center;
+display:none;
+
+}
+
+.progress{
+
+height:12px;
+background:#d8e5ea;
+border-radius:10px;
+overflow:hidden;
+margin:25px 0;
+
+}
+
+.bar{
+
+height:12px;
+background:#0b8d92;
+width:0%;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>MATHE TH</h1>
+
+<h2>Kapitel 01 – Bild · Muster · Term</h2>
+
+</header>
+
+<div class="container">
+
+<div class="progress">
+
+<div class="bar" id="bar"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Frage 1</h3>
+
+<p>
+
+2 • 5 • 8 • 11 • ...
+
+</p>
+
+<p>Wie lautet die nächste Zahl?</p>
+
+<input id="q1">
+
+<br>
+
+<button onclick="check1()">Überprüfen</button>
+
+<p id="r1"></p>
+
+</div>
+
+<div class="card">
+
+<h3>Frage 2</h3>
+
+<p>
+
+7 • 12 • 17 • 22 • ...
+
+</p>
+
+<p>Wie gross ist die Differenz?</p>
+
+<input id="q2">
+
+<br>
+
+<button onclick="check2()">Überprüfen</button>
+
+<p id="r2"></p>
+
+</div>
+
+<div class="card">
+
+<h3>Frage 3</h3>
+
+<p>
+
+3 • 7 • 11 • 15 • ...
+
+</p>
+
+<p>Wie lautet das 20. Folgenglied?</p>
+
+<input id="q3">
+
+<br>
+
+<button onclick="check3()">Überprüfen</button>
+
+<p id="r3"></p>
+
+</div>
+
+<div id="score"></div>
+
+</div>
+
+<script>
+
+let points=0;
+
+function update(){
+
+document.getElementById("bar").style.width=(points/3*100)+"%";
+
+if(points==3){
+
+document.getElementById("score").style.display="block";
+
+document.getElementById("score").innerHTML="🏆 Kapitel geschafft!<br><br>⭐⭐⭐<br><br>3 von 3 Aufgaben richtig.";
+
+}
+
+}
+
+function check1(){
+
+if(document.getElementById("q1").value=="14"){
+
+document.getElementById("r1").innerHTML="<span class='ok'>✅ Richtig!</span>";
+
+points++;
+
+update();
+
+}
+
+else{
+
+document.getElementById("r1").innerHTML="<span class='fail'>❌ Noch nicht. Die Folge wächst immer um +3.</span>";
+
+}
+
+}
+
+function check2(){
+
+if(document.getElementById("q2").value=="5"){
+
+document.getElementById("r2").innerHTML="<span class='ok'>✅ Genau.</span>";
+
+points++;
+
+update();
+
+}
+
+else{
+
+document.getElementById("r2").innerHTML="<span class='fail'>❌ Differenz nochmals bestimmen.</span>";
+
+}
+
+}
+
+function check3(){
+
+if(document.getElementById("q3").value=="79"){
+
+document.getElementById("r3").innerHTML="<span class='ok'>✅ Perfekt!</span>";
+
+points++;
+
+update();
+
+}
+
+else{
+
+document.getElementById("r3").innerHTML="<span class='fail'>❌ Tipp: aₙ = 3 + (n−1)·4</span>";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
