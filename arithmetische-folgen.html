@@ -4,25 +4,121 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MATHE – Folgen Trainer</title>
+
 <style>
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef3f6;color:#222}
-header{background:white;padding:22px 28px;border-bottom:4px solid #0b8d92}
-h1{margin:0;color:#0b8d92;font-size:30px}
-h2{margin:4px 0 0;font-size:20px;font-weight:400}
-.container{max-width:820px;margin:auto;padding:24px}
-.card{background:white;padding:24px;margin:18px 0;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.08)}
-.question{font-size:24px;font-weight:bold;letter-spacing:2px}
-input{font-size:20px;padding:10px;width:130px}
-button{padding:11px 18px;background:#0b8d92;color:white;border:0;border-radius:8px;font-size:16px;cursor:pointer;margin-top:12px}
-button:hover{background:#08777b}
-.ok{color:green;font-weight:bold}
-.fail{color:#c00000;font-weight:bold}
-.progress{height:12px;background:#d8e5ea;border-radius:10px;overflow:hidden;margin:18px 0}
-.bar{height:12px;background:#0b8d92;width:0%}
-.small{color:#666}
-#result{display:none;text-align:center;font-size:24px}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#eef3f6;
+  color:#222;
+}
+
+header{
+  background:white;
+  padding:22px 28px;
+  border-bottom:4px solid #0b8d92;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+h1{
+  margin:0;
+  color:#0b8d92;
+  font-size:30px;
+}
+
+h2{
+  margin:4px 0 0;
+  font-size:20px;
+  font-weight:400;
+}
+
+.container{
+  max-width:820px;
+  margin:auto;
+  padding:24px;
+}
+
+.card{
+  background:white;
+  padding:24px;
+  margin:18px 0;
+  border-radius:14px;
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.question{
+  font-size:24px;
+  font-weight:bold;
+  letter-spacing:2px;
+}
+
+input{
+  font-size:20px;
+  padding:10px;
+  width:130px;
+}
+
+button{
+  padding:11px 18px;
+  background:#0b8d92;
+  color:white;
+  border:0;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:12px;
+}
+
+button:hover{
+  background:#08777b;
+}
+
+button:disabled{
+  background:#aaa;
+  cursor:not-allowed;
+}
+
+.ok{
+  color:green;
+  font-weight:bold;
+}
+
+.fail{
+  color:#c00000;
+  font-weight:bold;
+}
+
+.hint{
+  color:#8a5a00;
+  font-weight:bold;
+}
+
+.progress{
+  height:12px;
+  background:#d8e5ea;
+  border-radius:10px;
+  overflow:hidden;
+  margin:18px 0;
+}
+
+.bar{
+  height:12px;
+  background:#0b8d92;
+  width:0%;
+}
+
+.small{
+  color:#666;
+}
+
+#result{
+  display:none;
+  text-align:center;
+  font-size:24px;
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -31,39 +127,52 @@ button:hover{background:#08777b}
 </header>
 
 <div class="container">
+
 <div class="card">
 <b>Training: arithmetische und geometrische Folgen</b>
-<p class="small">Löse 10 zufällige Aufgaben. Jede Aufgabe zählt nur einmal.</p>
+<p class="small">
+Löse 10 zufällige Aufgaben. Bei falscher Antwort erhältst du zuerst einen Tipp.
+</p>
 <button onclick="newTest()">Neuen Test starten</button>
 </div>
 
-<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="progress">
+  <div class="bar" id="bar"></div>
+</div>
+
 <div id="aufgaben"></div>
+
 <div class="card" id="result"></div>
+
 </div>
 
 <script>
 let score = 0;
 let answered = 0;
 let total = 10;
-let solutions = [];
+let questions = [];
+let tries = [];
+let done = [];
 
 function rand(min,max){
   return Math.floor(Math.random()*(max-min+1))+min;
 }
 
-function makeQuestion(i){
+function makeQuestion(){
   let type = rand(1,4);
 
   if(type === 1){
     let start = rand(1,12);
     let d = rand(2,8);
     let folge = [start, start+d, start+2*d, start+3*d];
+
     return {
       text: folge.join(" · ") + " · ...",
       ask: "Wie lautet die nächste Zahl?",
       answer: start + 4*d,
-      tip: "Es ist eine arithmetische Folge. Die Differenz ist +" + d + "."
+      hint1: "Vergleiche zwei benachbarte Zahlen.",
+      hint2: "Die Folge wächst immer um +" + d + ".",
+      solution: "Die nächste Zahl ist " + (start+3*d) + " + " + d + " = " + (start+4*d) + "."
     };
   }
 
@@ -71,11 +180,14 @@ function makeQuestion(i){
     let start = rand(2,15);
     let d = rand(2,9);
     let folge = [start, start+d, start+2*d, start+3*d];
+
     return {
       text: folge.join(" · ") + " · ...",
       ask: "Wie gross ist die Differenz?",
       answer: d,
-      tip: "Vergleiche zwei Nachbarzahlen."
+      hint1: "Subtrahiere: zweite Zahl minus erste Zahl.",
+      hint2: "Rechne " + (start+d) + " − " + start + ".",
+      solution: "Die Differenz ist " + d + "."
     };
   }
 
@@ -83,36 +195,45 @@ function makeQuestion(i){
     let start = rand(1,8);
     let q = rand(2,4);
     let folge = [start, start*q, start*q*q, start*q*q*q];
+
     return {
       text: folge.join(" · ") + " · ...",
       ask: "Wie lautet die nächste Zahl?",
       answer: start*q*q*q*q,
-      tip: "Es ist eine geometrische Folge. Der Faktor ist ×" + q + "."
+      hint1: "Hier wird nicht addiert, sondern multipliziert.",
+      hint2: "Der Faktor ist ×" + q + ".",
+      solution: "Die nächste Zahl ist " + (start*q*q*q) + " · " + q + " = " + (start*q*q*q*q) + "."
     };
   }
 
   let start = rand(1,6);
   let q = rand(2,5);
   let folge = [start, start*q, start*q*q, start*q*q*q];
+
   return {
     text: folge.join(" · ") + " · ...",
     ask: "Wie gross ist der Faktor?",
     answer: q,
-    tip: "Teile eine Zahl durch die vorherige Zahl."
+    hint1: "Teile eine Zahl durch die vorherige Zahl.",
+    hint2: "Rechne " + (start*q) + " : " + start + ".",
+    solution: "Der Faktor ist " + q + "."
   };
 }
 
 function newTest(){
   score = 0;
   answered = 0;
-  solutions = [];
+  questions = [];
+  tries = Array(total).fill(0);
+  done = Array(total).fill(false);
+
   document.getElementById("aufgaben").innerHTML = "";
   document.getElementById("result").style.display = "none";
   document.getElementById("bar").style.width = "0%";
 
   for(let i=0;i<total;i++){
-    let q = makeQuestion(i);
-    solutions.push(q.answer);
+    let q = makeQuestion();
+    questions.push(q);
 
     document.getElementById("aufgaben").innerHTML += `
       <div class="card">
@@ -123,29 +244,54 @@ function newTest(){
         <br>
         <button id="btn${i}" onclick="check(${i})">Überprüfen</button>
         <p id="feedback${i}"></p>
-        <p class="small">Tipp bei Fehler: ${q.tip}</p>
       </div>
     `;
   }
 }
 
 function check(i){
+  if(done[i]) return;
+
   let input = document.getElementById("input"+i);
   let btn = document.getElementById("btn"+i);
   let feedback = document.getElementById("feedback"+i);
 
   let value = Number(input.value);
+  let q = questions[i];
 
-  if(value === solutions[i]){
-    feedback.innerHTML = "<span class='ok'>✅ Richtig!</span>";
-    score++;
-  } else {
-    feedback.innerHTML = "<span class='fail'>❌ Noch nicht. Richtige Lösung: " + solutions[i] + "</span>";
+  if(input.value === ""){
+    feedback.innerHTML = "<span class='fail'>Bitte zuerst eine Zahl eingeben.</span>";
+    return;
   }
 
-  input.disabled = true;
-  btn.disabled = true;
-  answered++;
+  if(value === q.answer){
+    feedback.innerHTML = "<span class='ok'>✅ Richtig!</span>";
+    score++;
+    answered++;
+    done[i] = true;
+    input.disabled = true;
+    btn.disabled = true;
+  } else {
+    tries[i]++;
+
+    if(tries[i] === 1){
+      feedback.innerHTML =
+        "<span class='fail'>❌ Noch nicht.</span><br>" +
+        "<span class='hint'>💡 Tipp 1:</span> " + q.hint1;
+    }
+
+    else if(tries[i] === 2){
+      feedback.innerHTML =
+        "<span class='fail'>❌ Noch nicht.</span><br>" +
+        "<span class='hint'>💡 Tipp 2:</span> " + q.hint2;
+    }
+
+    else{
+      feedback.innerHTML =
+        "<span class='fail'>❌ Noch nicht.</span><br>" +
+        "✅ Lösung: " + q.solution;
+    }
+  }
 
   document.getElementById("bar").style.width = (answered/total*100) + "%";
 
@@ -153,7 +299,8 @@ function check(i){
     let stars = score >= 9 ? "⭐⭐⭐" : score >= 6 ? "⭐⭐" : "⭐";
     document.getElementById("result").style.display = "block";
     document.getElementById("result").innerHTML =
-      "🏁 Fertig!<br><br>" + stars + "<br><br>" +
+      "🏁 Fertig!<br><br>" +
+      stars + "<br><br>" +
       score + " von " + total + " Aufgaben richtig.";
   }
 }
