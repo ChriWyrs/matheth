@@ -1,1 +1,35 @@
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MATHE – adaptives Training</title>
+    <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
 
+    <header>
+      <div>
+        <h1 id="pageTitle">MATHE Training</h1>
+        <h2 id="pageSub">adaptive Nachbearbeitung</h2>
+      </div>
+      <a class="home" href="index.html">Startseite</a>
+    </header>
+
+    <main class="container">
+      <section class="card intro">
+        <b id="trainerTitle">Training wird geladen …</b>
+        <p id="trainerInfo" class="small"></p>
+        <button onclick="newTest()">Neue Aufgaben generieren</button>
+      </section>
+
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div id="aufgaben"></div>
+
+      <div class="card" id="result"></div>
+    </main>
+
+    <script src="js/app.js"></script>
+
+    </body>
+    </html>
