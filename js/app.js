@@ -66,6 +66,7 @@ function genFigurLinear(){
 
 /* 2 · Term auswählen */
 function genTermAuswahl(){
+
   let d = rand(3,8);
   let c = rand(-5,5);
   let vals = [1,2,3,4].map(x => d*x+c);
@@ -73,9 +74,26 @@ function genTermAuswahl(){
 
   return {
     ziel:"Aus einer Wertetabelle den passenden Term erkennen.",
-    text:`Gegeben ist die Tabelle:<br><br>
-          x: &nbsp;&nbsp; 1 | 2 | 3 | 4<br>
-          Tₓ: ${vals.join(" | ")}`,
+    text:`
+      <table class="sequence-table">
+        <tr>
+          <th>Glied</th>
+          <td>1</td>
+          <td>2</td>
+          <td>3</td>
+          <td>4</td>
+          <td>x</td>
+        </tr>
+        <tr>
+          <th>T(x)</th>
+          <td>${vals[0]}</td>
+          <td>${vals[1]}</td>
+          <td>${vals[2]}</td>
+          <td>${vals[3]}</td>
+          <td class="question">?</td>
+        </tr>
+      </table>
+    `,
     ask:"Welcher Term passt? Schreibe ihn ohne Leerzeichen, z. B. 4x+1",
     answer:[term, term.replace("+"," + ").replace("-"," - ")],
     hint1:"Schau zuerst, um wie viel die Werte jeweils zunehmen.",
@@ -83,7 +101,6 @@ function genTermAuswahl(){
     solution:`Der passende Term ist ${term}.`
   };
 }
-
 /* 3 · Quadratische Folge */
 function genQuadratisch(){
   let b = rand(1,5);
