@@ -1,1 +1,173 @@
-:root{--main:#0b8d92;--main-dark:#08777b;--bg:#eef3f6;--text:#222;--card:#fff;--ok:#198754;--fail:#c00000;--hint:#8a5a00;--line:#d4dde2}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}header{background:white;padding:22px 28px;border-bottom:4px solid var(--main);box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center;gap:20px}header h1{margin:0;color:var(--main);font-size:30px}header h2{margin:4px 0 0;font-size:20px;font-weight:400}.home{color:var(--main);text-decoration:none;font-weight:bold}.container{max-width:850px;margin:auto;padding:24px}.card{background:var(--card);padding:24px;margin:18px 0;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.08)}.card h3{margin-top:0;color:var(--main)}.question{font-size:23px;font-weight:bold;letter-spacing:1px;line-height:1.45}.small{color:#666;line-height:1.45}.meta{font-size:14px;color:#666;margin-bottom:8px}input{font-size:20px;padding:10px;min-width:150px;max-width:100%;border:1px solid #999;border-radius:6px}button{padding:11px 18px;background:var(--main);color:white;border:0;border-radius:8px;font-size:16px;cursor:pointer;margin-top:12px}button:hover{background:var(--main-dark)}button:disabled{background:#aaa;cursor:not-allowed}.ok{color:var(--ok);font-weight:bold}.fail{color:var(--fail);font-weight:bold}.hint{color:var(--hint);font-weight:bold}.progress{height:12px;background:#d8e5ea;border-radius:10px;overflow:hidden;margin:18px 0}.bar{height:12px;background:var(--main);width:0%}#result{display:none;text-align:center;font-size:24px}
+:root{
+    --main:#0b8d92;
+    --main-dark:#08777b;
+    --bg:#eef3f6;
+    --card:#ffffff;
+    --text:#222;
+    --ok:#198754;
+    --fail:#c00000;
+    --hint:#8a5a00;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+header{
+    background:white;
+    padding:22px 30px;
+    border-bottom:4px solid var(--main);
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+header h1{
+    margin:0;
+    color:var(--main);
+    font-size:32px;
+}
+
+header h2{
+    margin:5px 0 0;
+    font-size:20px;
+    font-weight:400;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:30px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    margin-bottom:25px;
+    border-radius:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.card h3{
+    color:var(--main);
+    margin-top:0;
+}
+
+.question{
+    font-size:22px;
+    line-height:1.5;
+}
+
+.small{
+    color:#666;
+    font-size:15px;
+}
+
+input{
+    font-size:20px;
+    padding:10px;
+    width:180px;
+    margin-top:10px;
+}
+
+button{
+    margin-top:15px;
+    padding:12px 22px;
+    background:var(--main);
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:var(--main-dark);
+}
+
+button:disabled{
+    background:#999;
+}
+
+.ok{
+    color:var(--ok);
+    font-weight:bold;
+}
+
+.fail{
+    color:var(--fail);
+    font-weight:bold;
+}
+
+.hint{
+    color:var(--hint);
+    font-weight:bold;
+}
+
+.progress{
+    height:12px;
+    background:#d8e5ea;
+    border-radius:8px;
+    overflow:hidden;
+    margin:25px 0;
+}
+
+.bar{
+    height:12px;
+    background:var(--main);
+    width:0%;
+}
+
+#result{
+    display:none;
+    text-align:center;
+    font-size:24px;
+}
+
+/* ---------- Folgen-Tabelle ---------- */
+
+.sequence-table{
+
+    border-collapse:collapse;
+    margin:20px auto;
+    font-size:21px;
+
+}
+
+.sequence-table th,
+.sequence-table td{
+
+    border:1px solid #888;
+    padding:10px 18px;
+    text-align:center;
+    min-width:48px;
+
+}
+
+.sequence-table th{
+
+    background:#f2f2f2;
+    font-weight:bold;
+
+}
+
+.sequence-table td.question{
+
+    color:#0b8d92;
+    font-weight:bold;
+    font-size:24px;
+
+}
+
+/* ---------- Lernziel ---------- */
+
+.goal{
+
+    background:#eef9fa;
+    border-left:5px solid var(--main);
+    padding:12px;
+    margin-bottom:18px;
+    border-radius:8px;
+
+}
