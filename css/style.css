@@ -40,15 +40,15 @@ body{
 .trainer-header{
   margin-bottom:20px;
 }
-
 .hero h1,
 .trainer-header h1{
   margin:.15rem 0 .35rem;
   font-size:clamp(1.7rem, 3.8vw, 3rem);
-  font-weight:600;
+  font-weight:500;
   letter-spacing:-.03em;
   line-height:1.05;
 }
+
 
 .lead{
   margin:0;
