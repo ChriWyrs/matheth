@@ -290,6 +290,187 @@ function genLinearCompleteTable() {
   };
 }
 
+
+/* G07 · Figurenfolgen */
+
+function squareSvg(count, mode) {
+  const size = 16;
+  const gap = 2;
+  const cells = [];
+
+  function add(x, y) {
+    cells.push({ x, y });
+  }
+
+  if (mode === "linearBar") {
+    for (let i = 0; i < count; i++) add(i, 0);
+  }
+
+  if (mode === "lShape") {
+    for (let i = 0; i < count; i++) add(i, 0);
+    for (let j = 1; j < count; j++) add(0, j);
+  }
+
+  if (mode === "stair") {
+    for (let r = 0; r < count; r++) {
+      for (let c = 0; c <= r; c++) add(c, r);
+    }
+  }
+
+  if (mode === "frame") {
+    for (let x = 0; x < count; x++) {
+      for (let y = 0; y < count; y++) {
+        if (x === 0 || y === 0 || x === count - 1 || y === count - 1) add(x, y);
+      }
+    }
+  }
+
+  const maxX = Math.max(...cells.map(c => c.x), 0);
+  const maxY = Math.max(...cells.map(c => c.y), 0);
+  const w = (maxX + 1) * (size + gap) + gap;
+  const h = (maxY + 1) * (size + gap) + gap;
+
+  const rects = cells.map(c =>
+    `<rect x="${gap + c.x * (size + gap)}" y="${gap + c.y * (size + gap)}" width="${size}" height="${size}" rx="3"></rect>`
+  ).join("");
+
+  return `
+    <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img">
+      <g fill="currentColor">${rects}</g>
+    </svg>
+  `;
+}
+
+function figureGallery(figures) {
+  return `
+    <div class="figure-stage">
+      <div class="figure-row">
+        ${figures.map(f => `
+          <div class="figure-card">
+            <strong>Figur ${f.n}</strong>
+            ${f.svg}
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function genFigureLinearSquares() {
+  const step = rand(3, 6);
+  const start = rand(1, 4);
+  const a = step;
+  const b = start - step;
+
+  const values = {};
+  [1, 2, 3, 4, 5, 10, 50].forEach(n => values[n] = a * n + b);
+  values.n = linearTermText(a, b);
+
+  const figures = [1, 2, 3].map(n => ({ n, svg: squareSvg(values[n], "linearBar") }));
+
+  return {
+    badge: "G07 · Figurenfolge",
+    ziel: "Aus einer wachsenden Figur einen linearen Term bestimmen.",
+    text: `
+      <p>Die Figuren bestehen aus Quadraten. Bestimme den Term.</p>
+      ${figureGallery(figures)}
+      ${sequenceTable(values, { columns: [1, 2, 3, 10, 50, "n"], hidden: ["10", "50", "n"], label: "Anzahl" })}
+    `,
+    ask: "Bestimme den Term für Figur n. Beispiel: 4n+1",
+    answer: { kind: "linear", a, b },
+    hint1: "Zähle zuerst die Quadrate in Figur 1, 2 und 3.",
+    hint2: `Von Figur zu Figur kommen immer ${a} Quadrate dazu.`,
+    hint3: `Der Term beginnt mit ${a}n. Prüfe mit Figur 1, was noch addiert oder subtrahiert werden muss.`,
+    solution: `
+      Die Anzahl wächst jedes Mal um ${a}. Deshalb beginnt der Term mit ${a}n.<br>
+      Bei n = 1 soll ${values[1]} herauskommen. Der Term lautet <strong>${values.n}</strong>.
+    `
+  };
+}
+
+function genFigureLShape() {
+  const values = {};
+  [1, 2, 3, 4, 5, 10, 50].forEach(n => values[n] = 2 * n - 1);
+  values.n = "2n-1";
+
+  const figures = [1, 2, 3].map(n => ({ n, svg: squareSvg(n, "lShape") }));
+
+  return {
+    badge: "G07 · L-Figur",
+    ziel: "Eine geometrische Struktur erkennen und als Term beschreiben.",
+    text: `
+      <p>Die Figuren wachsen als L-Form.</p>
+      ${figureGallery(figures)}
+      ${sequenceTable(values, { columns: [1, 2, 3, 10, 50, "n"], hidden: ["10", "50", "n"], label: "Quadrate" })}
+    `,
+    ask: "Bestimme den Term für Figur n.",
+    answer: { kind: "linear", a: 2, b: -1 },
+    hint1: "Die Ecke wird von beiden Armen gemeinsam benutzt.",
+    hint2: "Eine L-Figur besteht aus einem waagrechten und einem senkrechten Arm.",
+    hint3: "Zwei Arme mit Länge n ergeben 2n. Die Ecke wurde dabei doppelt gezählt.",
+    solution: `
+      Man kann die Figur als zwei Arme der Länge n sehen.<br>
+      Das ergibt 2n, aber das Eckquadrat wurde doppelt gezählt.<br>
+      Deshalb lautet der Term <strong>2n-1</strong>.
+    `
+  };
+}
+
+function genFigureStair() {
+  const values = {};
+  [1, 2, 3, 4, 5, 10, 50].forEach(n => values[n] = (n * (n + 1)) / 2);
+  values.n = "n(n+1):2";
+
+  const figures = [1, 2, 3, 4].map(n => ({ n, svg: squareSvg(n, "stair") }));
+
+  return {
+    badge: "G07 · Treppenfigur",
+    ziel: "Eine nichtlineare Figurenfolge erkennen.",
+    text: `
+      <p>Die Figur wächst treppenartig. Notiere die Anzahl Quadrate.</p>
+      ${figureGallery(figures)}
+      ${sequenceTable(values, { columns: [1, 2, 3, 4, 5, 10, "n"], hidden: ["5", "10", "n"], label: "Quadrate" })}
+    `,
+    ask: "Wie viele Quadrate hat Figur 10?",
+    answer: values[10],
+    hint1: "Zähle die Quadrate zeilenweise.",
+    hint2: "Figur 4 besteht aus 1 + 2 + 3 + 4 Quadraten.",
+    hint3: "Für Figur 10 rechnest du 1 + 2 + 3 + ... + 10.",
+    solution: `
+      Die Treppe besteht aus 1 + 2 + 3 + ... + n Quadraten.<br>
+      Für Figur 10: 10 · 11 : 2 = <strong>${values[10]}</strong>.
+    `
+  };
+}
+
+function genFigureFrame() {
+  const values = {};
+  [1, 2, 3, 4, 5, 10, 50].forEach(n => values[n] = 4 * n + 4);
+  values.n = "4n+4";
+
+  const figures = [1, 2, 3].map(n => ({ n, svg: squareSvg(n + 2, "frame") }));
+
+  return {
+    badge: "G07 · Rahmenfigur",
+    ziel: "Eine Figur geschickt zerlegen und einen Term finden.",
+    text: `
+      <p>Die Figuren bestehen aus einem quadratischen Rahmen.</p>
+      ${figureGallery(figures)}
+      ${sequenceTable(values, { columns: [1, 2, 3, 10, 50, "n"], hidden: ["10", "50", "n"], label: "Quadrate" })}
+    `,
+    ask: "Bestimme den Term für Figur n.",
+    answer: { kind: "linear", a: 4, b: 4 },
+    hint1: "Zähle nicht jedes Quadrat einzeln. Schau auf die vier Seiten.",
+    hint2: "Von einer Figur zur nächsten kommen immer 4 Quadrate dazu.",
+    hint3: "Der Term beginnt mit 4n. Prüfe mit Figur 1.",
+    solution: `
+      Die Folge lautet ${values[1]}, ${values[2]}, ${values[3]}, ...<br>
+      Die Anzahl wächst jedes Mal um 4. Der Term lautet <strong>4n+4</strong>.
+    `
+  };
+}
+
+
 /* Bestehende weitere Generatoren bleiben einfach, bis sie später einzeln verbessert werden. */
 
 function genQuadraticTerm() {
@@ -355,20 +536,25 @@ const pools = {
     info: "Goldstandard-Prototyp: Wertetabellen, Termbildung, Tipps und Schritt-für-Schritt-Lösung.",
     generators: [genLinearFindTerm, genLinearFindValue, genLinearCompleteTable]
   },
+  "figurenfolge": {
+    title: "G07 · Figurenfolgen",
+    info: "Dynamische Figuren mit Quadraten. Die Bilder werden im Browser jedes Mal neu erzeugt.",
+    generators: [genFigureLinearSquares, genFigureLShape, genFigureStair, genFigureFrame]
+  },
   "startklar": {
     title: "Startklar · Vom Bild zum Term",
     info: "Vorläufiger Mix passend zur Lernstanderfassung. Die einzelnen Generatoren werden nun Schritt für Schritt verbessert.",
-    generators: [genLinearFindTerm, genLinearFindValue, genLinearCompleteTable, genQuadraticTerm, genGauss, genEquation]
+    generators: [genLinearFindTerm, genLinearFindValue, genLinearCompleteTable, genFigureLinearSquares, genFigureLShape, genFigureStair, genFigureFrame, genQuadraticTerm, genGauss, genEquation]
   },
   "lk": {
     title: "Lernkontrolle · Vom Bild zum Term",
     info: "Vorläufiger Mix passend zur Lernkontrolle.",
-    generators: [genLinearFindTerm, genLinearFindValue, genLinearCompleteTable, genQuadraticTerm, genGauss, genEquation]
+    generators: [genLinearFindTerm, genLinearFindValue, genLinearCompleteTable, genFigureLinearSquares, genFigureLShape, genFigureStair, genFigureFrame, genQuadraticTerm, genGauss, genEquation]
   },
   "test": {
     title: "Test · Vom Bild zum Term",
     info: "Vorläufiger Mix passend zum Test.",
-    generators: [genLinearFindTerm, genLinearFindValue, genLinearCompleteTable, genQuadraticTerm, genGauss, genEquation]
+    generators: [genLinearFindTerm, genLinearFindValue, genLinearCompleteTable, genFigureLinearSquares, genFigureLShape, genFigureStair, genFigureFrame, genQuadraticTerm, genGauss, genEquation]
   },
   "quadratisch": {
     title: "G06 · Quadratische Zahlenfolgen",
