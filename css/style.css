@@ -38,11 +38,13 @@ body{
   margin-bottom:24px;
 }
 
-.hero h1,.trainer-header h1{
-  margin:.2rem 0 .4rem;
-  font-size:clamp(2.1rem, 5vw, 4.3rem);
-  letter-spacing:-.055em;
-  line-height:.98;
+.hero h1,
+.trainer-header h1 {
+    font-size: clamp(1.7rem, 3.8vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0.15rem 0 0.4rem;
 }
 
 .lead{
@@ -72,10 +74,13 @@ body{
   padding:24px;
   margin-bottom:18px;
 }
-
-.card h2,.task h2{
-  margin:0 0 10px;
-  letter-spacing:-.025em;
+.card h2,
+.task h2{
+  margin:0 0 8px;
+  font-size:1.25rem;
+  font-weight:600;
+  letter-spacing:-.02em;
+  line-height:1.2;
 }
 
 .muted{background:rgba(250,248,244,.9)}
