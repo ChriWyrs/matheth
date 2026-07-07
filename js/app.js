@@ -1,66 +1,33 @@
-let score = 0;
-let solved = 0;
-let total = 5;
-let questions = [];
-let tries = [];
-let done = [];
-
-const url = new URL(window.location.href);
-const typ = url.searchParams.get("typ") || "startklar";
-const nParam = Number(url.searchParams.get("n"));
-if(Number.isInteger(nParam) && nParam > 0 && nParam <= 20){
-  total = nParam;
-}
-
-function rand(min,max){
-  return Math.floor(Math.random()*(max-min+1))+min;
-}
-
-function sum1(n){
-  return n*(n+1)/2;
-}
-
-function clean(s){
-  return String(s)
-    .toLowerCase()
-    .replaceAll(" ","")
-    .replaceAll("·","*")
-    .replaceAll("−","-")
-    .replaceAll("²","^2");
-}
-
-function ok(value, answer){
-  if(Array.isArray(answer)){
-    return answer.some(a => ok(value,a));
-  }
-  if(typeof answer === "number"){
-    return Number(value) === answer;
-  }
-  return clean(value) === clean(answer);
-}
-
-/* 1 · Figur → Term */
-function genFigurLinear(){
-  let d = rand(3,7);
-  let c = rand(-2,5);
-  let f1 = d + c;
-  let f2 = 2*d + c;
-  let f3 = 3*d + c;
-  let n = [20,50,75,100,150][rand(0,4)];
-  let ans = d*n + c;
-  let term = c >= 0 ? `${d}n+${c}` : `${d}n${c}`;
-
-  return {
-    ziel:"Figurmuster erkennen und mit einem Term beschreiben.",
-    text:`Eine Figur wächst regelmässig:<br><br>
-          Figur 1 → ${f1} Plättchen<br>
-          Figur 2 → ${f2} Plättchen<br>
-          Figur 3 → ${f3} Plättchen`,
-    ask:`Wie viele Plättchen hat Figur ${n}?`,
-    answer:ans,
-    hint1:"Finde zuerst heraus, wie viele Plättchen von Figur zu Figur dazukommen.",
-    hint2:`Es kommen immer ${d} Plättchen dazu. Der Term lautet ${term}.`,
-    solution:`${term}; also ${d} · ${n} ${c>=0?"+":"-"} ${Math.abs(c)} = ${ans}`
+let score=0,solved=0,total=5,questions=[],tries=[],done=[];
+const url=new URL(window.location.href);const typ=url.searchParams.get("typ")||"startklar";const nParam=Number(url.searchParams.get("n"));
+if(Number.isInteger(nParam)&&nParam>0&&nParam<=20){total=nParam}
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function pick(arr){return arr[rand(0,arr.length-1)]}
+function sum1(n){return n*(n+1)/2}
+function clean(s){return String(s).toLowerCase().replaceAll(" ","").replaceAll("·","*").replaceAll("−","-").replaceAll("–","-").replaceAll("²","^2").replaceAll("n","x")}
+function parseLinearTerm(input){let s=clean(input);if(s==="")return null;s=s.replaceAll("*x","x");if(!s.startsWith("+")&&!s.startsWith("-"))s="+"+s;const parts=s.match(/[+-][^+-]+/g);if(!parts)return null;let a=0,b=0;for(const part of parts){const sign=part[0]==="-"?-1:1;const body=part.slice(1);if(body.includes("x")){let coeff=body.replace("x","");if(coeff===""||coeff==="*")coeff="1";const num=Number(coeff);if(Number.isNaN(num))return null;a+=sign*num}else{const num=Number(body);if(Number.isNaN(num))return null;b+=sign*num}}return{a,b}}
+function parseQuadraticTerm(input){let s=clean(input);if(s==="")return null;s=s.replaceAll("*x^2","x^2").replaceAll("*x","x");if(!s.startsWith("+")&&!s.startsWith("-"))s="+"+s;const parts=s.match(/[+-][^+-]+/g);if(!parts)return null;let a=0,b=0,c=0;for(const part of parts){const sign=part[0]==="-"?-1:1;const body=part.slice(1);if(body.includes("x^2")){let coeff=body.replace("x^2","");if(coeff==="")coeff="1";const num=Number(coeff);if(Number.isNaN(num))return null;a+=sign*num}else if(body.includes("x")){let coeff=body.replace("x","");if(coeff==="")coeff="1";const num=Number(coeff);if(Number.isNaN(num))return null;b+=sign*num}else{const num=Number(body);if(Number.isNaN(num))return null;c+=sign*num}}return{a,b,c}}
+function ok(value,answer){if(typeof answer==="object"&&answer.kind==="linear"){const got=parseLinearTerm(value);return got&&got.a===answer.a&&got.b===answer.b}if(typeof answer==="object"&&answer.kind==="quadratic"){const got=parseQuadraticTerm(value);return got&&got.a===answer.a&&got.b===answer.b&&got.c===answer.c}if(Array.isArray(answer))return answer.some(a=>ok(value,a));if(typeof answer==="number")return Number(value)===answer;return clean(value)===clean(answer)}
+function linearTermText(a,b,v="n"){let s="";if(a===1)s=v;else if(a===-1)s="-"+v;else if(a!==0)s=a+v;if(b>0)s+="+"+b;if(b<0)s+=b;return s||"0"}
+function quadraticTermText(a,b,c,v="n"){let s="";if(a!==0){if(a===1)s+=v+"²";else if(a===-1)s+="-"+v+"²";else s+=a+v+"²"}if(b!==0){if(s!==""&&b>0)s+="+";if(b===1)s+=v;else if(b===-1)s+="-"+v;else s+=b+v}if(c!==0){if(s!==""&&c>0)s+="+";s+=c}return s||"0"}
+function makeSequenceTable(values,options={}){const ask5=options.ask5??true,ask50=options.ask50??true,askTerm=options.askTerm??true,label=options.label||"T(n)";function cell(value,q){return q?`<td class="question-cell">?</td>`:`<td>${value}</td>`}return `<table class="sequence-table"><tr><th>n</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>50</td><td>n</td></tr><tr><th>${label}</th>${cell(values[1],false)}${cell(values[2],false)}${cell(values[3],false)}${cell(values[4],false)}${cell(values[5],ask5)}${cell(values[50],ask50)}${cell(values.n,askTerm)}</tr></table>`}
+function genLineareFolgeWert(){const d=rand(3,8),c=rand(-6,6),values={};[1,2,3,4,5,50].forEach(n=>values[n]=d*n+c);values.n=linearTermText(d,c);const target=pick([5,50]);return{ziel:"Eine arithmetische Folge in einer Tabelle weiterführen.",text:makeSequenceTable(values,{ask5:target===5,ask50:target===50,askTerm:false}),ask:`Berechne T(${target}).`,answer:values[target],hint1:"Vergleiche zwei benachbarte Werte.",hint2:`Die Differenz ist +${d}.`,solution:`Der Term ist ${values.n}. Also T(${target}) = ${values[target]}.`}}
+function genLineareFolgeTerm(){const d=rand(3,8),c=rand(-6,6),values={};[1,2,3,4,5,50].forEach(n=>values[n]=d*n+c);values.n=linearTermText(d,c);return{ziel:"Aus einer Wertetabelle den Term einer arithmetischen Folge bestimmen.",text:makeSequenceTable(values,{ask5:true,ask50:true,askTerm:true}),ask:"Bestimme den Term T(n). Schreibe z. B. 4n+1. Auch 4n+0 wird korrekt erkannt.",answer:{kind:"linear",a:d,b:c},hint1:"Bestimme zuerst die Differenz zwischen zwei benachbarten Werten.",hint2:`Die Differenz ist +${d}. Der Term beginnt also mit ${d}n.`,solution:`T(n) = ${values.n}.`}}
+function genGeometrischeFolgeWert(){const start=rand(1,6),q=rand(2,4),values={};[1,2,3,4,5,50].forEach(n=>{values[n]=n<=5?start*Math.pow(q,n-1):"gross"});values.n=`${start}·${q}^(n-1)`;return{ziel:"Eine geometrische Folge erkennen und weiterführen.",text:makeSequenceTable(values,{ask5:true,ask50:false,askTerm:false}),ask:"Berechne T(5).",answer:start*Math.pow(q,4),hint1:"Hier wird nicht addiert, sondern multipliziert.",hint2:`Der Faktor ist ×${q}.`,solution:`T(5) = ${start} · ${q}⁴ = ${start*Math.pow(q,4)}.`}}
+function genFigurLinear(){const d=rand(3,7),c=rand(-1,5),values={};[1,2,3,4,5,50].forEach(n=>values[n]=d*n+c);values.n=linearTermText(d,c);const target=pick([5,50]);return{ziel:"Ein Figurmuster mit einem linearen Term beschreiben.",text:`<p>Eine Figur wächst regelmässig. Die Tabelle zeigt die ersten Figuren:</p>${makeSequenceTable(values,{label:"Plättchen",ask5:target===5,ask50:target===50,askTerm:true})}`,ask:`Wie viele Plättchen hat Figur ${target}?`,answer:values[target],hint1:"Suche, wie viele Plättchen von Figur zu Figur dazukommen.",hint2:`Es kommen immer ${d} Plättchen dazu. Der Term ist ${values.n}.`,solution:`${values.n}; Figur ${target}: ${values[target]} Plättchen.`}}
+function genQuadratischeFolgeWert(){const a=1,b=rand(1,5),c=rand(-4,6),values={};[1,2,3,4,5,50].forEach(n=>values[n]=a*n*n+b*n+c);values.n=quadraticTermText(a,b,c);const target=pick([5,50]);return{ziel:"Eine quadratische Folge in einer Tabelle auswerten.",text:makeSequenceTable(values,{ask5:target===5,ask50:target===50,askTerm:false}),ask:`Berechne T(${target}).`,answer:values[target],hint1:"Die Differenzen verändern sich. Es ist keine lineare Folge.",hint2:`Der Term ist ${values.n}.`,solution:`T(${target}) = ${values[target]}.`}}
+function genQuadratischeFolgeTerm(){const a=1,b=rand(1,5),c=rand(-4,6),values={};[1,2,3,4,5,50].forEach(n=>values[n]=a*n*n+b*n+c);values.n=quadraticTermText(a,b,c);return{ziel:"Den Term einer quadratischen Folge erkennen.",text:makeSequenceTable(values,{ask5:false,ask50:true,askTerm:true}),ask:"Bestimme den Term T(n). Schreibe z. B. n²+4n+1.",answer:{kind:"quadratic",a:a,b:b,c:c},hint1:"Schau auf die Differenzen und die zweiten Differenzen.",hint2:`Der Term beginnt mit n². Danach folgt ${b}n.`,solution:`T(n) = ${values.n}.`}}
+function genGauss(){const n=pick([50,75,100,120,150,200,250]),ans=sum1(n);return{ziel:"Eine lange Summe mit der Gauß-Idee berechnen.",text:`Berechne geschickt:<br><br><span class="question">1 + 2 + 3 + … + ${n}</span>`,ask:"Wie gross ist die Summe?",answer:ans,hint1:"Paarweise addieren: erste Zahl + letzte Zahl.",hint2:`Formel: ${n} · ${n+1} : 2.`,solution:`${n} · ${n+1} : 2 = ${ans}.`}}
+function genSummenDifferenz(){const a=rand(120,280),b=rand(3,15),c=rand(20,40),ans=sum1(a)-(sum1(c)-sum1(b-1));return{ziel:"Die Differenz zweier Summen geschickt berechnen.",text:`Berechne:<br><br>Summe aller Zahlen von 1 bis ${a}<br>minus<br>Summe aller Zahlen von ${b} bis ${c}`,ask:"Wie gross ist die Differenz?",answer:ans,hint1:"Berechne zuerst beide Summen getrennt.",hint2:`Summe ${b} bis ${c} = S_${c} − S_${b-1}.`,solution:`S_${a} − (S_${c} − S_${b-1}) = ${sum1(a)} − (${sum1(c)} − ${sum1(b-1)}) = ${ans}.`}}
+function genWuerfel(){const n=pick([5,10,20,50]),ans=n*n+n+1,values={};[1,2,3,4,5,50].forEach(k=>values[k]=k*k+k+1);values.n="n²+n+1";return{ziel:"Ein Würfelmuster mit einem quadratischen Term beschreiben.",text:`<p>Eine Würfelfolge hat den Term <code class="term">n²+n+1</code>.</p>${makeSequenceTable(values,{label:"Würfel",ask5:n===5,ask50:n===50,askTerm:false})}`,ask:`Wie viele Würfel hat Schritt ${n}?`,answer:ans,hint1:"Setze die Schrittnummer für n ein.",hint2:"Der Term lautet n²+n+1.",solution:`${n}² + ${n} + 1 = ${ans}.`}}
+function genGleichung(){const x=rand(3,18),a=rand(2,8),b=rand(-12,12),rhs=a*x+b,sign=b>=0?"+":"-";return{ziel:"Eine lineare Gleichung lösen.",text:`Löse die Gleichung:<br><br><span class="question">${a}x ${sign} ${Math.abs(b)} = ${rhs}</span>`,ask:"Wie lautet x?",answer:x,hint1:"Bringe zuerst die Zahl ohne x auf die andere Seite.",hint2:`Danach durch ${a} teilen.`,solution:`${a}x = ${rhs-b}; also x = ${x}.`}}
+function genTextgleichung(){const x=rand(4,14),a=rand(2,5),c=rand(2,6),b=rand(3,12),d=a*x+b-c*x;return{ziel:"Eine Textaufgabe in eine Gleichung übersetzen.",text:`Addiert man zum ${a}-Fachen einer Zahl ${b}, so erhält man ${d} mehr als das ${c}-Fache der Zahl.`,ask:"Welche Zahl ist gesucht?",answer:x,hint1:"Setze für die gesuchte Zahl x.",hint2:`Die Gleichung lautet: ${a}x + ${b} = ${c}x + ${d}.`,solution:`${a}x + ${b} = ${c}x + ${d}; x = ${x}.`}}
+function genFaktorisieren(){const a=rand(2,9),b=rand(2,8);return{ziel:"Einen gemeinsamen Faktor ausklammern.",text:`Faktorisiere:<br><br><span class="question">${a}x + ${a*b}</span>`,ask:"Schreibe die faktorisierte Form, z. B. 3(x+4).",answer:[`${a}(x+${b})`,`${a}*(x+${b})`],hint1:"Suche den gemeinsamen Faktor.",hint2:`Beide Terme sind durch ${a} teilbar.`,solution:`${a}x + ${a*b} = ${a}(x+${b}).`}}
+const pools={startklar:{title:"Startklar · Vom Bild zum Term",info:"Aufgaben passend zur Lernstanderfassung: Folgen, Figurmuster, Terme, Summen und Gleichungen.",generators:[genLineareFolgeWert,genLineareFolgeTerm,genGeometrischeFolgeWert,genFigurLinear,genQuadratischeFolgeWert,genGauss,genGleichung]},lk:{title:"Lernkontrolle · Vom Bild zum Term",info:"Aufgaben passend zur Lernkontrolle: Gleichungen, Folgen, Tabellen, Figurenzahlen und Summen.",generators:[genGleichung,genLineareFolgeTerm,genLineareFolgeWert,genFigurLinear,genQuadratischeFolgeWert,genQuadratischeFolgeTerm,genGauss]},test:{title:"Test · Vom Bild zum Term",info:"Anspruchsvollere Nachbearbeitung: quadratische Folgen, Summendifferenz, Würfelmuster, Textgleichungen und Faktorisieren.",generators:[genQuadratischeFolgeWert,genQuadratischeFolgeTerm,genSummenDifferenz,genWuerfel,genTextgleichung,genFaktorisieren]},"linear-folge":{title:"Repetition · Arithmetische Folge",info:"Lineare Folgen mit Tabelle und Term.",generators:[genLineareFolgeWert,genLineareFolgeTerm]},"geometrisch":{title:"Repetition · Geometrische Folge",info:"Folgen mit konstantem Faktor.",generators:[genGeometrischeFolgeWert]},"figur-linear":{title:"Repetition · Figur → Term",info:"Figurenfolgen mit linearem Wachstum.",generators:[genFigurLinear]},"quadratisch":{title:"Repetition · Quadratische Folge",info:"Quadratische Folgen und Terme.",generators:[genQuadratischeFolgeWert,genQuadratischeFolgeTerm]},gauss:{title:"Repetition · Gauß-Summe",info:"Summen geschickt berechnen.",generators:[genGauss]},summendifferenz:{title:"Repetition · Summendifferenz",info:"Differenz zweier Summen berechnen.",generators:[genSummenDifferenz]},wuerfel:{title:"Repetition · Würfelmuster",info:"Würfelfolgen mit quadratischem Term.",generators:[genWuerfel]},gleichung:{title:"Repetition · Gleichung",info:"Lineare Gleichungen lösen.",generators:[genGleichung]},textgleichung:{title:"Repetition · Textgleichung",info:"Text in Gleichung übersetzen.",generators:[genTextgleichung]},faktorisieren:{title:"Repetition · Faktorisieren",info:"Terme faktorisieren.",generators:[genFaktorisieren]}}
+function chooseGenerator(){const pool=pools[typ]||pools.startklar;return pool.generators[rand(0,pool.generators.length-1)]}
+function newTest(){const pool=pools[typ]||pools.startklar;document.getElementById("pageTitle").innerText=pool.title;document.getElementById("pageSub").innerText="adaptive Nachbearbeitung";document.getElementById("trainerTitle").innerText=pool.title;document.getElementById("trainerInfo").innerText=pool.info;score=0;solved=0;questions=[];tries=Array(total).fill(0);done=Array(total).fill(false);document.getElementById("aufgaben").innerHTML="";document.getElementById("result").style.display="none";document.getElementById("bar").style.width="0%";for(let i=0;i<total;i++){const q=chooseGenerator()();questions.push(q);document.getElementById("aufgaben").innerHTML+=`<div class="card"><div class="goal">🎯 Lernziel: ${q.ziel}</div><h3>Übung ${i+1}</h3><div class="question">${q.text}</div><p>${q.ask}</p><div class="answer-line"><input id="input${i}" type="text" autocomplete="off"><button id="btn${i}" type="button" onclick="check(${i})">Überprüfen</button></div><p id="feedback${i}"></p></div>`}}
+function check(i){if(done[i])return;const input=document.getElementById("input"+i),btn=document.getElementById("btn"+i),feedback=document.getElementById("feedback"+i),q=questions[i];if(input.value.trim()===""){feedback.innerHTML="<span class='fail'>Bitte zuerst eine Antwort eingeben.</span>";return}if(ok(input.value,q.answer)){done[i]=true;solved++;if(tries[i]===0)score++;feedback.innerHTML="<span class='ok'>✅ Richtig!</span>";input.disabled=true;btn.disabled=true}else{tries[i]++;if(tries[i]===1){feedback.innerHTML="<span class='fail'>❌ Noch nicht.</span><br><span class='hint'>💡 Tipp 1:</span> "+q.hint1}else if(tries[i]===2){feedback.innerHTML="<span class='fail'>❌ Noch nicht.</span><br><span class='hint'>💡 Tipp 2:</span> "+q.hint2}else{feedback.innerHTML="<span class='fail'>❌ Noch nicht.</span><br>✅ "+q.solution+"<br>Du kannst die richtige Antwort trotzdem noch eintippen."}input.focus();input.select()}document.getElementById("bar").style.width=(solved/total*100)+"%";if(solved===total){const stars=score>=Math.ceil(total*.9)?"⭐⭐⭐":score>=Math.ceil(total*.6)?"⭐⭐":"⭐";document.getElementById("result").style.display="block";document.getElementById("result").innerHTML="🏁 Training abgeschlossen!<br><br>"+stars+"<br><br>"+score+" von "+total+" Aufgaben beim ersten Versuch richtig."}}
+window.onload=newTest;    solution:`${term}; also ${d} · ${n} ${c>=0?"+":"-"} ${Math.abs(c)} = ${ans}`
   };
 }
 
