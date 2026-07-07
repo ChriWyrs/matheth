@@ -1,65 +1,110 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MATHE – adaptives Training</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/style.css">
+    <title>MATHE – Adaptives Training</title>
 
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<header>
+<main class="page">
 
-<div>
+    <header class="trainer-header">
 
-<h1 id="pageTitle">MATHE Training</h1>
+        <a class="back-link"
+           href="index.html">
+            ← Startseite
+        </a>
 
-<h2 id="pageSub">adaptive Nachbearbeitung</h2>
+        <div>
 
-</div>
+            <p class="eyebrow"
+               id="pageSub">
+                Adaptive Nachbearbeitung
+            </p>
 
-<a class="home" href="index.html">
-Startseite
-</a>
+            <h1 id="pageTitle">
+                Training wird geladen …
+            </h1>
 
-</header>
+        </div>
 
-<main class="container">
+    </header>
 
-<section class="card intro">
 
-<b id="trainerTitle">
+    <section class="card intro-card">
 
-Training wird geladen …
+        <div>
 
-</b>
+            <h2 id="trainerTitle">
+                Training
+            </h2>
 
-<p id="trainerInfo" class="small"></p>
+            <p id="trainerInfo">
+                Die Aufgaben werden vorbereitet …
+            </p>
 
-<button onclick="newTest()">
+        </div>
 
-Neue Aufgaben generieren
+        <button
+            class="secondary"
+            type="button"
+            onclick="newTraining()">
 
-</button>
+            Neue Aufgaben
 
-</section>
+        </button>
 
-<div class="progress">
+    </section>
 
-<div class="bar" id="bar"></div>
 
-</div>
+    <section class="progress-card">
 
-<div id="aufgaben"></div>
+        <div class="progress-label">
 
-<div id="result" class="card"></div>
+            <span>Fortschritt</span>
+
+            <span id="progressText">
+                0 / 0
+            </span>
+
+        </div>
+
+        <div class="progress-track">
+
+            <div
+                class="progress-bar"
+                id="bar">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="aufgaben"
+        class="tasks">
+
+    </section>
+
+
+    <section
+        id="result"
+        class="result"
+        hidden>
+
+    </section>
+
+
+    <script src="js/app.js"></script>
 
 </main>
-
-<script src="js/app.js"></script>
 
 </body>
 </html>
