@@ -341,3 +341,63 @@ code{
 @media (max-width:720px){
   .figure-card{min-width:116px;padding:10px}
 }
+
+/* Feinschliff: ruhigere Überschriften */
+
+.hero h1,
+.trainer-header h1 {
+  font-size: clamp(1.8rem, 4vw, 3.3rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.trainer-header {
+  margin-bottom: 18px;
+}
+
+.task h2 {
+  font-size: 1.45rem;
+}
+
+/* G07 · Figurenfolgen */
+
+.figure-stage {
+  width: 100%;
+  overflow-x: auto;
+  padding: 12px 4px 4px;
+}
+
+.figure-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  min-width: max-content;
+}
+
+.figure-card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+  min-width: 136px;
+  text-align: center;
+}
+
+.figure-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent-dark);
+}
+
+.figure-card svg {
+  display: block;
+  margin: 0 auto;
+  color: var(--accent);
+}
+
+@media (max-width: 720px) {
+  .figure-card {
+    min-width: 116px;
+    padding: 10px;
+  }
+}
