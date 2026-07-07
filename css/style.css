@@ -32,39 +32,45 @@ body{
   padding:32px 0 56px;
 }
 
-.page-narrow{width:min(920px, calc(100% - 32px))}
+.page-narrow{
+  width:min(920px, calc(100% - 32px));
+}
 
-.hero,.trainer-header{
-  margin-bottom:24px;
+.hero,
+.trainer-header{
+  margin-bottom:20px;
 }
 
 .hero h1,
-.trainer-header h1 {
-    font-size: clamp(1.7rem, 3.8vw, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
-    margin: 0.15rem 0 0.4rem;
+.trainer-header h1{
+  margin:.15rem 0 .35rem;
+  font-size:clamp(1.7rem, 3.8vw, 3rem);
+  font-weight:600;
+  letter-spacing:-.03em;
+  line-height:1.05;
 }
 
 .lead{
   margin:0;
   color:var(--muted);
-  font-size:1.15rem;
+  font-size:1.1rem;
 }
 
 .eyebrow{
   margin:0;
   color:var(--accent);
-  font-weight:800;
+  font-weight:700;
   text-transform:uppercase;
   letter-spacing:.12em;
-  font-size:.78rem;
+  font-size:.76rem;
 }
 
-.card,.progress-card,.task,.result{
+.card,
+.progress-card,
+.task,
+.result{
   background:rgba(255,255,255,.86);
-  backdrop-filter: blur(8px);
+  backdrop-filter:blur(8px);
   border:1px solid var(--line);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
@@ -74,16 +80,19 @@ body{
   padding:24px;
   margin-bottom:18px;
 }
+
 .card h2,
 .task h2{
   margin:0 0 8px;
   font-size:1.25rem;
-  font-weight:600;
+  font-weight:500;
   letter-spacing:-.02em;
   line-height:1.2;
 }
 
-.muted{background:rgba(250,248,244,.9)}
+.muted{
+  background:rgba(250,248,244,.9);
+}
 
 .section-head{
   display:flex;
@@ -109,7 +118,7 @@ body{
   background:var(--soft);
   border:1px solid var(--line);
   border-radius:18px;
-  font-weight:800;
+  font-weight:700;
 }
 
 .training-link span{
@@ -125,7 +134,9 @@ body{
   border-color:var(--accent);
 }
 
-.training-link.primary span{color:rgba(255,255,255,.8)}
+.training-link.primary span{
+  color:rgba(255,255,255,.8);
+}
 
 .trainer-header{
   display:flex;
@@ -136,7 +147,7 @@ body{
 .back-link{
   color:var(--accent);
   text-decoration:none;
-  font-weight:800;
+  font-weight:700;
   padding-top:10px;
   white-space:nowrap;
 }
@@ -157,7 +168,7 @@ body{
   display:flex;
   justify-content:space-between;
   color:var(--muted);
-  font-weight:700;
+  font-weight:600;
   margin-bottom:8px;
 }
 
@@ -201,7 +212,7 @@ body{
   background:#edf3f5;
   color:var(--accent-dark);
   font-size:.78rem;
-  font-weight:800;
+  font-weight:700;
 }
 
 .goal{
@@ -228,7 +239,8 @@ body{
   margin:12px 0;
 }
 
-.sequence-table th,.sequence-table td{
+.sequence-table th,
+.sequence-table td{
   text-align:center;
   padding:12px 10px;
   border-right:1px solid var(--line);
@@ -236,16 +248,24 @@ body{
   min-width:58px;
 }
 
-.sequence-table th:last-child,.sequence-table td:last-child{border-right:0}
-.sequence-table tr:last-child td{border-bottom:0}
+.sequence-table th:last-child,
+.sequence-table td:last-child{
+  border-right:0;
+}
+
+.sequence-table tr:last-child td{
+  border-bottom:0;
+}
+
 .sequence-table th{
   background:#f1eee8;
-  font-weight:900;
+  font-weight:700;
 }
+
 .sequence-table .question{
   color:var(--accent);
-  font-weight:900;
-  font-size:1.2rem;
+  font-weight:700;
+  font-size:1.15rem;
 }
 
 .answer-row{
@@ -271,12 +291,18 @@ button{
   background:var(--accent);
   color:white;
   font:inherit;
-  font-weight:900;
+  font-weight:700;
   cursor:pointer;
 }
 
-button:hover{background:var(--accent-dark)}
-button:disabled{opacity:.55;cursor:not-allowed}
+button:hover{
+  background:var(--accent-dark);
+}
+
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
 
 button.secondary{
   background:#edf3f5;
@@ -291,9 +317,20 @@ button.secondary{
   color:var(--text);
 }
 
-.feedback.good{background:#eaf6ef;color:var(--good)}
-.feedback.bad{background:#fff0f0;color:var(--bad)}
-.feedback.hint{background:#fff6df;color:var(--warn)}
+.feedback.good{
+  background:#eaf6ef;
+  color:var(--good);
+}
+
+.feedback.bad{
+  background:#fff0f0;
+  color:var(--bad);
+}
+
+.feedback.hint{
+  background:#fff6df;
+  color:var(--warn);
+}
 
 .solution{
   margin-top:10px;
@@ -321,88 +358,95 @@ code{
   text-align:center;
 }
 
+/* G07 · dynamische Figurenfolgen */
+
+.figure-stage{
+  width:100%;
+  overflow-x:auto;
+  padding:12px 4px 4px;
+}
+
+.figure-row{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  min-width:max-content;
+}
+
+.figure-card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  min-width:136px;
+  text-align:center;
+}
+
+.figure-card strong{
+  display:block;
+  margin-bottom:8px;
+  color:var(--accent-dark);
+  font-weight:600;
+}
+
+.figure-card svg{
+  display:block;
+  margin:0 auto;
+  color:var(--accent);
+}
+
+.figure-note{
+  color:var(--muted);
+  font-size:.95rem;
+  margin-top:10px;
+}
+
 @media (max-width:720px){
-  .page{width:min(100% - 22px, 1060px);padding-top:18px}
-  .trainer-header,.intro-card{display:block}
-  .back-link{display:inline-block;margin-bottom:12px}
-  .link-grid{grid-template-columns:1fr}
-  .task-top{display:block}
-  .sequence-table{font-size:.92rem}
-  .sequence-table th,.sequence-table td{padding:9px 6px;min-width:44px}
-  .answer-row{display:block}
-  input,button{width:100%;margin-top:8px}
-}
+  .page{
+    width:min(100% - 22px, 1060px);
+    padding-top:18px;
+  }
 
+  .trainer-header,
+  .intro-card{
+    display:block;
+  }
 
-/* G07 Â· dynamische Figurenfolgen */
+  .back-link{
+    display:inline-block;
+    margin-bottom:12px;
+  }
 
-.figure-stage{width:100%;overflow-x:auto;padding:12px 4px 4px}
-.figure-row{display:flex;gap:14px;align-items:flex-start;min-width:max-content}
-.figure-card{background:white;border:1px solid var(--line);border-radius:16px;padding:12px;min-width:136px;text-align:center}
-.figure-card strong{display:block;margin-bottom:8px;color:var(--accent-dark)}
-.figure-card svg{display:block;margin:0 auto;color:var(--accent)}
-.figure-note{color:var(--muted);font-size:.95rem;margin-top:10px}
+  .link-grid{
+    grid-template-columns:1fr;
+  }
 
-@media (max-width:720px){
-  .figure-card{min-width:116px;padding:10px}
-}
+  .task-top{
+    display:block;
+  }
 
-/* Feinschliff: ruhigere Überschriften */
+  .sequence-table{
+    font-size:.92rem;
+  }
 
-.hero h1,
-.trainer-header h1 {
-  font-size: clamp(1.8rem, 4vw, 3.3rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-}
+  .sequence-table th,
+  .sequence-table td{
+    padding:9px 6px;
+    min-width:44px;
+  }
 
-.trainer-header {
-  margin-bottom: 18px;
-}
+  .answer-row{
+    display:block;
+  }
 
-.task h2 {
-  font-size: 1.45rem;
-}
+  input,
+  button{
+    width:100%;
+    margin-top:8px;
+  }
 
-/* G07 · Figurenfolgen */
-
-.figure-stage {
-  width: 100%;
-  overflow-x: auto;
-  padding: 12px 4px 4px;
-}
-
-.figure-row {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  min-width: max-content;
-}
-
-.figure-card {
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 12px;
-  min-width: 136px;
-  text-align: center;
-}
-
-.figure-card strong {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--accent-dark);
-}
-
-.figure-card svg {
-  display: block;
-  margin: 0 auto;
-  color: var(--accent);
-}
-
-@media (max-width: 720px) {
-  .figure-card {
-    min-width: 116px;
-    padding: 10px;
+  .figure-card{
+    min-width:116px;
+    padding:10px;
   }
 }
