@@ -1,5 +1,5 @@
 /* MATHE adaptive Nachbearbeitung
-   Saubere Version mit G05 und G07
+   Version: G05 + erweiterter G07
 */
 
 let score = 0;
@@ -43,7 +43,10 @@ function parseNumber(input) {
 
 function parseLinearTerm(input) {
   let s = clean(input).replaceAll("*x", "x");
-  if (!s.startsWith("+") && !s.startsWith("-")) s = "+" + s;
+
+  if (!s.startsWith("+") && !s.startsWith("-")) {
+    s = "+" + s;
+  }
 
   const parts = s.match(/[+-][^+-]+/g);
   if (!parts) return null;
@@ -103,6 +106,7 @@ function sequenceTable(values, options = {}) {
   const hidden = new Set(options.hidden || []);
 
   const top = columns.map(col => `<th>${col}</th>`).join("");
+
   const bottom = columns.map(col => {
     if (hidden.has(String(col))) return `<td class="question">?</td>`;
     return `<td>${values[col]}</td>`;
@@ -116,13 +120,15 @@ function sequenceTable(values, options = {}) {
   `;
 }
 
-/* G05 LINEARE ZAHLENFOLGEN */
+/* G05 · Lineare Zahlenfolgen */
 
 function makeLinearValues(a, b) {
   const values = {};
+
   [1, 2, 3, 4, 5, 6, 10, 50, 100, 150].forEach(n => {
     values[n] = a * n + b;
   });
+
   values.n = linearTermText(a, b);
   return values;
 }
@@ -143,12 +149,12 @@ function genLinearFindTerm() {
     answer: { kind: "linear", a, b },
     hint1: "Vergleiche zwei benachbarte Werte.",
     hint2: `Die Differenz ist ${a}. Der Term beginnt mit ${a}n.`,
-    hint3: `Setze n = 1 ein und vergleiche mit dem ersten Wert.`,
+    hint3: "Setze n = 1 ein und vergleiche mit dem ersten Wert.",
     solution: `Der Term lautet <strong>T(n) = ${values.n}</strong>.`
   };
 }
 
-/* G07 FIGURENFOLGEN */
+/* G07 · Figurenfolgen */
 
 function squareSvg(count, mode) {
   const size = 16;
@@ -215,7 +221,7 @@ function figureGallery(figures) {
   `;
 }
 
-function genFigureBar() {
+function genFigureBarTerm() {
   const a = rand(3, 6);
   const b = rand(-2, 4);
   const values = makeLinearValues(a, b);
@@ -226,7 +232,7 @@ function genFigureBar() {
   }));
 
   return {
-    badge: "G07 · Figurenfolge",
+    badge: "G07 · Term",
     ziel: "Aus einer wachsenden Figur einen linearen Term bestimmen.",
     text: `
       <p>Die Figuren bestehen aus Quadraten.</p>
@@ -237,14 +243,72 @@ function genFigureBar() {
     answer: { kind: "linear", a, b },
     hint1: "Zähle die Quadrate in Figur 1, 2 und 3.",
     hint2: `Von Figur zu Figur kommen immer ${a} Quadrate dazu.`,
-    hint3: `Der Term beginnt mit ${a}n.`,
+    hint3: `Der Term beginnt mit ${a}n. Prüfe dann Figur 1.`,
     solution: `Der Term lautet <strong>${values.n}</strong>.`
   };
 }
 
-function genFigureL() {
+function genFigureValue10() {
+  const a = rand(3, 7);
+  const b = rand(-3, 5);
+  const values = makeLinearValues(a, b);
+
+  const figures = [1, 2, 3].map(n => ({
+    n,
+    svg: squareSvg(values[n], "bar")
+  }));
+
+  return {
+    badge: "G07 · Figur 10",
+    ziel: "Die Anzahl in einer späteren Figur berechnen.",
+    text: `
+      <p>Die Figurenfolge wächst regelmässig.</p>
+      ${figureGallery(figures)}
+      ${sequenceTable(values, { columns: [1, 2, 3, 10], hidden: ["10"], label: "Quadrate" })}
+    `,
+    ask: "Wie viele Quadrate hat Figur 10?",
+    answer: values[10],
+    hint1: "Bestimme zuerst, wie viele Quadrate jedes Mal dazukommen.",
+    hint2: `Es kommen immer ${a} Quadrate dazu.`,
+    hint3: `Der Term ist ${values.n}. Setze n = 10 ein.`,
+    solution: `T(10) = ${a} · 10 ${b >= 0 ? "+ " + b : "- " + Math.abs(b)} = <strong>${values[10]}</strong>.`
+  };
+}
+
+function genFigureNewPart() {
+  const a = rand(3, 7);
+  const b = rand(0, 5);
+  const values = makeLinearValues(a, b);
+
+  const figures = [1, 2, 3].map(n => ({
+    n,
+    svg: squareSvg(values[n], "bar")
+  }));
+
+  return {
+    badge: "G07 · Neu dazu",
+    ziel: "Erkennen, was von Schritt zu Schritt neu dazukommt.",
+    text: `
+      <p>Vergleiche die Figuren genau.</p>
+      ${figureGallery(figures)}
+      ${sequenceTable(values, { columns: [1, 2, 3, 4, "neu"], hidden: ["neu"], label: "Quadrate" })}
+    `,
+    ask: "Wie viele Quadrate kommen von einer Figur zur nächsten neu dazu?",
+    answer: a,
+    hint1: "Vergleiche Figur 1 und Figur 2.",
+    hint2: `Figur 1 hat ${values[1]} Quadrate, Figur 2 hat ${values[2]} Quadrate.`,
+    hint3: `Rechne ${values[2]} - ${values[1]}.`,
+    solution: `Von Figur zu Figur kommen immer <strong>${a}</strong> Quadrate dazu.`
+  };
+}
+
+function genFigureLTerm() {
   const values = {};
-  [1, 2, 3, 4, 5, 10, 50].forEach(n => values[n] = 2 * n - 1);
+
+  [1, 2, 3, 4, 5, 10, 50].forEach(n => {
+    values[n] = 2 * n - 1;
+  });
+
   values.n = "2n-1";
 
   const figures = [1, 2, 3].map(n => ({
@@ -269,11 +333,13 @@ function genFigureL() {
   };
 }
 
-function genFigureStair() {
+function genFigureStairValue() {
   const values = {};
+
   [1, 2, 3, 4, 5, 10, 50].forEach(n => {
     values[n] = n * (n + 1) / 2;
   });
+
   values.n = "n(n+1):2";
 
   const figures = [1, 2, 3, 4].map(n => ({
@@ -292,17 +358,19 @@ function genFigureStair() {
     ask: "Wie viele Quadrate hat Figur 10?",
     answer: values[10],
     hint1: "Zähle die Quadrate zeilenweise.",
-    hint2: "Figur 4 besteht aus 1+2+3+4 Quadraten.",
-    hint3: "Für Figur 10 rechnest du 1+2+...+10.",
-    solution: `Figur 10 hat 10·11:2 = <strong>${values[10]}</strong> Quadrate.`
+    hint2: "Figur 4 besteht aus 1 + 2 + 3 + 4 Quadraten.",
+    hint3: "Für Figur 10 rechnest du 1 + 2 + 3 + ... + 10.",
+    solution: `Figur 10 hat 10 · 11 : 2 = <strong>${values[10]}</strong> Quadrate.`
   };
 }
 
-function genFigureFrame() {
+function genFigureFrameTerm() {
   const values = {};
+
   [1, 2, 3, 4, 5, 10, 50].forEach(n => {
     values[n] = 4 * n + 4;
   });
+
   values.n = "4n+4";
 
   const figures = [1, 2, 3].map(n => ({
@@ -327,7 +395,7 @@ function genFigureFrame() {
   };
 }
 
-/* TRAININGS */
+/* Trainings */
 
 const pools = {
   "linear-folge": {
@@ -338,26 +406,52 @@ const pools = {
 
   "figurenfolge": {
     title: "G07 · Figurenfolgen",
-    info: "Dynamische Figurenfolgen mit Quadraten.",
-    generators: [genFigureBar, genFigureL, genFigureStair, genFigureFrame]
+    info: "Dynamische Figurenfolgen mit Term, Figur 10, Tabelle und neu dazukommenden Teilen.",
+    generators: [
+      genFigureBarTerm,
+      genFigureValue10,
+      genFigureNewPart,
+      genFigureLTerm,
+      genFigureStairValue,
+      genFigureFrameTerm
+    ]
   },
 
   "startklar": {
     title: "Startklar · Vom Bild zum Term",
     info: "Vorläufiger Mix.",
-    generators: [genLinearFindTerm, genFigureBar, genFigureL, genFigureStair]
+    generators: [
+      genLinearFindTerm,
+      genFigureBarTerm,
+      genFigureValue10,
+      genFigureNewPart,
+      genFigureLTerm
+    ]
   },
 
   "lk": {
     title: "Lernkontrolle · Vom Bild zum Term",
     info: "Vorläufiger Mix.",
-    generators: [genLinearFindTerm, genFigureBar, genFigureL, genFigureFrame]
+    generators: [
+      genLinearFindTerm,
+      genFigureBarTerm,
+      genFigureValue10,
+      genFigureLTerm,
+      genFigureFrameTerm
+    ]
   },
 
   "test": {
     title: "Test · Vom Bild zum Term",
     info: "Vorläufiger Mix.",
-    generators: [genLinearFindTerm, genFigureBar, genFigureStair, genFigureFrame]
+    generators: [
+      genLinearFindTerm,
+      genFigureBarTerm,
+      genFigureValue10,
+      genFigureNewPart,
+      genFigureStairValue,
+      genFigureFrameTerm
+    ]
   }
 };
 
@@ -435,6 +529,7 @@ function check(i) {
   if (ok(input.value, q.answer)) {
     done[i] = true;
     solved++;
+
     if (tries[i] === 0) score++;
 
     feedback.classList.add("good");
