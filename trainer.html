@@ -1,110 +1,52 @@
 <!doctype html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>MATHE – Adaptives Training</title>
-
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATHE – Adaptives Training</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
 <main class="page">
 
-    <header class="trainer-header">
+  <header class="trainer-header">
+    <a class="back-link" href="index.html">← Startseite</a>
+    <div>
+      <p class="eyebrow" id="pageSub">Adaptive Nachbearbeitung</p>
+      <h1 id="pageTitle">Training wird geladen …</h1>
+    </div>
+  </header>
 
-        <a class="back-link"
-           href="index.html">
-            ← Startseite
-        </a>
+  <section class="card intro-card">
+    <div>
+      <h2 id="trainerTitle">Training</h2>
+      <p id="trainerInfo">Die Aufgaben werden vorbereitet …</p>
+    </div>
+    <button class="secondary" type="button" onclick="newTraining()">Neue Aufgaben</button>
+  </section>
 
-        <div>
+  <section class="progress-card">
+    <div class="progress-label">
+      <span>Fortschritt</span>
+      <span id="progressText">0 / 0</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-bar" id="bar"></div>
+    </div>
+  </section>
 
-            <p class="eyebrow"
-               id="pageSub">
-                Adaptive Nachbearbeitung
-            </p>
+  <section id="aufgaben" class="tasks"></section>
 
-            <h1 id="pageTitle">
-                Training wird geladen …
-            </h1>
-
-        </div>
-
-    </header>
-
-
-    <section class="card intro-card">
-
-        <div>
-
-            <h2 id="trainerTitle">
-                Training
-            </h2>
-
-            <p id="trainerInfo">
-                Die Aufgaben werden vorbereitet …
-            </p>
-
-        </div>
-
-        <button
-            class="secondary"
-            type="button"
-            onclick="newTraining()">
-
-            Neue Aufgaben
-
-        </button>
-
-    </section>
-
-
-    <section class="progress-card">
-
-        <div class="progress-label">
-
-            <span>Fortschritt</span>
-
-            <span id="progressText">
-                0 / 0
-            </span>
-
-        </div>
-
-        <div class="progress-track">
-
-            <div
-                class="progress-bar"
-                id="bar">
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="aufgaben"
-        class="tasks">
-
-    </section>
-
-
-    <section
-        id="result"
-        class="result"
-        hidden>
-
-    </section>
-
-
-    <script src="js/app.js"></script>
+  <section id="result" class="result" hidden></section>
 
 </main>
+
+<script src="js/utils.js"></script>
+<script src="js/g05.js"></script>
+<script src="js/g06.js"></script>
+<script src="js/g07.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 </html>
