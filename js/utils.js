@@ -138,29 +138,27 @@ function diffTable(values,columns){
     d2.push(d1[i+1]-d1[i]);
   }
 
-  const gridColumns = `auto repeat(${columns.length * 2 - 1}, minmax(38px, 1fr))`;
-
   return `
-    <div class="diff-grid" style="grid-template-columns:${gridColumns}">
-      <div class="diff-label">n</div>
-      ${columns.map((n,i)=>`
-        <div class="diff-cell diff-head" style="grid-column:${2+i*2}">${n}</div>
-      `).join("")}
+    <div class="diff-box">
+      <div class="diff-row diff-row-head">
+        <div class="diff-label">n</div>
+        ${columns.map(n=>`<div class="diff-value">${n}</div>`).join("")}
+      </div>
 
-      <div class="diff-label">Folge</div>
-      ${columns.map((n,i)=>`
-        <div class="diff-cell" style="grid-column:${2+i*2}">${values[n]}</div>
-      `).join("")}
+      <div class="diff-row">
+        <div class="diff-label">Folge</div>
+        ${columns.map(n=>`<div class="diff-value diff-main">${values[n]}</div>`).join("")}
+      </div>
 
-      <div class="diff-label">1. Differenzfolge</div>
-      ${d1.map((v,i)=>`
-        <div class="diff-cell diff-soft" style="grid-column:${3+i*2}">${v}</div>
-      `).join("")}
+      <div class="diff-row diff-offset-1">
+        <div class="diff-label">1. Differenzfolge</div>
+        ${d1.map(v=>`<div class="diff-value diff-one">${v}</div>`).join("")}
+      </div>
 
-      <div class="diff-label">2. Differenzfolge</div>
-      ${d2.map((v,i)=>`
-        <div class="diff-cell diff-question" style="grid-column:${4+i*2}">${v}</div>
-      `).join("")}
+      <div class="diff-row diff-offset-2">
+        <div class="diff-label">2. Differenzfolge</div>
+        ${d2.map(v=>`<div class="diff-value diff-two">${v}</div>`).join("")}
+      </div>
     </div>
   `;
 }
