@@ -450,3 +450,47 @@ code{
     padding:10px;
   }
 }
+
+
+/* Versetzte Differenzfolgen */
+
+.diff-grid{
+  display:grid;
+  gap:6px;
+  align-items:center;
+  overflow-x:auto;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  margin:12px 0;
+}
+
+.diff-label{
+  font-weight:600;
+  color:var(--accent-dark);
+  white-space:nowrap;
+  padding:8px 10px;
+}
+
+.diff-cell{
+  text-align:center;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#faf8f4;
+  min-width:38px;
+}
+
+.diff-head{
+  background:#f1eee8;
+  font-weight:600;
+}
+
+.diff-soft{
+  background:#edf3f5;
+}
+
+.diff-question{
+  background:#fff6df;
+  font-weight:600;
+}
