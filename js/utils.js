@@ -139,6 +139,38 @@ function diffTable(values,columns){
   }
 
   return `
+    <table class="sequence-table">
+      <tr>
+        <th>n</th>
+        ${columns.map(n=>`<th>${n}</th>`).join("")}
+      </tr>
+
+      <tr>
+        <th>Folge</th>
+        ${columns.map(n=>`<td>${values[n]}</td>`).join("")}
+      </tr>
+
+      <tr>
+        <th>1. Differenzfolge</th>
+        ${d1.map(v=>`<td colspan="1">${v}</td>`).join("")}
+        <td></td>
+      </tr>
+
+      <tr>
+        <th>2. Differenzfolge</th>
+        <td></td>
+        ${d2.map(v=>`<td>${v}</td>`).join("")}
+        <td></td>
+      </tr>
+    </table>
+  `;
+}
+
+  for(let i=0;i<d1.length-1;i++){
+    d2.push(d1[i+1]-d1[i]);
+  }
+
+  return `
     <table class="sequence-table diff-table">
       <tr>
         <th>n</th>
