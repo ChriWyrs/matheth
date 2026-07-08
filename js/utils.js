@@ -138,62 +138,29 @@ function diffTable(values,columns){
     d2.push(d1[i+1]-d1[i]);
   }
 
-  return `
-    <table class="sequence-table">
-      <tr>
-        <th>n</th>
-        ${columns.map(n=>`<th>${n}</th>`).join("")}
-      </tr>
-
-      <tr>
-        <th>Folge</th>
-        ${columns.map(n=>`<td>${values[n]}</td>`).join("")}
-      </tr>
-
-      <tr>
-        <th>1. Differenzfolge</th>
-        ${d1.map(v=>`<td colspan="1">${v}</td>`).join("")}
-        <td></td>
-      </tr>
-
-      <tr>
-        <th>2. Differenzfolge</th>
-        <td></td>
-        ${d2.map(v=>`<td>${v}</td>`).join("")}
-        <td></td>
-      </tr>
-    </table>
-  `;
-}
-
-  for(let i=0;i<d1.length-1;i++){
-    d2.push(d1[i+1]-d1[i]);
-  }
+  const gridColumns = `auto repeat(${columns.length * 2 - 1}, minmax(38px, 1fr))`;
 
   return `
-    <table class="sequence-table diff-table">
-      <tr>
-        <th>n</th>
-        ${columns.map(n=>`<th>${n}</th>`).join("")}
-      </tr>
+    <div class="diff-grid" style="grid-template-columns:${gridColumns}">
+      <div class="diff-label">n</div>
+      ${columns.map((n,i)=>`
+        <div class="diff-cell diff-head" style="grid-column:${2+i*2}">${n}</div>
+      `).join("")}
 
-      <tr>
-        <th>Folge</th>
-        ${columns.map(n=>`<td>${values[n]}</td>`).join("")}
-      </tr>
+      <div class="diff-label">Folge</div>
+      ${columns.map((n,i)=>`
+        <div class="diff-cell" style="grid-column:${2+i*2}">${values[n]}</div>
+      `).join("")}
 
-      <tr>
-        <th>1. Differenzfolge</th>
-        ${d1.map(v=>`<td colspan="1">${v}</td>`).join("")}
-        <td></td>
-      </tr>
+      <div class="diff-label">1. Differenzfolge</div>
+      ${d1.map((v,i)=>`
+        <div class="diff-cell diff-soft" style="grid-column:${3+i*2}">${v}</div>
+      `).join("")}
 
-      <tr>
-        <th>2. Differenzfolge</th>
-        <td></td>
-        ${d2.map(v=>`<td>${v}</td>`).join("")}
-        <td></td>
-      </tr>
-    </table>
+      <div class="diff-label">2. Differenzfolge</div>
+      ${d2.map((v,i)=>`
+        <div class="diff-cell diff-question" style="grid-column:${4+i*2}">${v}</div>
+      `).join("")}
+    </div>
   `;
 }
