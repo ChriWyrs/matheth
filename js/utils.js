@@ -74,9 +74,25 @@ function parseQuadraticTerm(input){
 }
 
 function ok(value,answer){
+  if(typeof answer==="object" && answer.kind==="number"){
+    const cleaned=clean(value).replace("%","");
+    const num=Number(cleaned.replace(",","."));
+    return Number.isFinite(num) && Math.abs(num-answer.value)<0.0001;
+  }
+
   if(typeof answer==="object" && answer.kind==="linear"){
     const got = parseLinearTerm(value);
     return got && got.a===answer.a && got.b===answer.b;
+  }
+
+  if(typeof answer==="object" && answer.kind==="quadratic"){
+    const got = parseQuadraticTerm(value);
+    return got && got.a===answer.a && got.b===answer.b && got.c===answer.c;
+  }
+
+  if(typeof answer==="number") return parseNumber(value)===answer;
+  return clean(value)===clean(answer);
+}
   }
 
   if(typeof answer==="object" && answer.kind==="quadratic"){
