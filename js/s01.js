@@ -37,5 +37,39 @@ function genSlopePercent(){
 TRAINERS["steigung"]={
   title:"S01 · Steigung berechnen",
   info:"Steigung in Prozent berechnen und einordnen.",
+
+  function slopeTriangleSvg(horizontal, rise, unit="m"){
+  return `
+    <div class="slope-svg-wrap">
+      <svg viewBox="0 0 520 260" class="slope-svg" role="img" aria-label="Steigungsdreieck">
+        <polygon points="70,200 410,200 410,70" class="slope-fill"></polygon>
+
+        <line x1="70" y1="200" x2="410" y2="200" class="slope-line-horizontal"></line>
+        <line x1="410" y1="200" x2="410" y2="70" class="slope-line-vertical"></line>
+        <line x1="70" y1="200" x2="410" y2="70" class="slope-line-hyp"></line>
+
+        <circle cx="70" cy="200" r="5" class="slope-dot"></circle>
+        <circle cx="410" cy="70" r="5" class="slope-dot"></circle>
+
+        <path d="M 382 200 L 382 172 L 410 172" class="slope-right-angle"></path>
+
+        <text x="240" y="235" text-anchor="middle" class="slope-text-horizontal">
+          ${horizontal} ${unit}
+        </text>
+        <text x="240" y="255" text-anchor="middle" class="slope-label">
+          Horizontaldistanz
+        </text>
+
+        <text x="440" y="130" class="slope-text-vertical">
+          ${rise} ${unit}
+        </text>
+        <text x="440" y="152" class="slope-label">
+          Höhendifferenz
+        </text>
+      </svg>
+    </div>
+  `;
+}
+  
   generators:[genSlopePercent]
 };
