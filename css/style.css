@@ -544,3 +544,68 @@ code{
 .diff-offset-2{
   padding-left:122px;
 }
+
+.slope-svg-wrap{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  margin:14px 0;
+  overflow-x:auto;
+}
+
+.slope-svg{
+  width:100%;
+  max-width:620px;
+  display:block;
+  margin:0 auto;
+}
+
+.slope-fill{
+  fill:rgba(49,95,114,.08);
+}
+
+.slope-line-horizontal{
+  stroke:#315f72;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+
+.slope-line-vertical{
+  stroke:#20744a;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+
+.slope-line-hyp{
+  stroke:#1f2933;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+
+.slope-dot{
+  fill:#1f2933;
+}
+
+.slope-right-angle{
+  fill:none;
+  stroke:#1f2933;
+  stroke-width:3;
+}
+
+.slope-text-horizontal{
+  fill:#315f72;
+  font-size:24px;
+  font-weight:600;
+}
+
+.slope-text-vertical{
+  fill:#20744a;
+  font-size:24px;
+  font-weight:600;
+}
+
+.slope-label{
+  fill:#65717f;
+  font-size:16px;
+}
