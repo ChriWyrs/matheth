@@ -1,12 +1,11 @@
-
 /* =========================================
    K01 · Räumliche Koordinaten
-   Neutraler Koordinatenwürfel
+   Koordinatenwürfel 0 bis 5
    ========================================= */
 
 
 /* -----------------------------------------
-   Antworten
+   Antwortformat
    ----------------------------------------- */
 
 function coordinateAnswer(x, y, z){
@@ -21,23 +20,23 @@ function coordinateAnswer(x, y, z){
    Grundeinstellungen
    ----------------------------------------- */
 
-const K01_SIZE = 5;
+const K01_MAX = 5;
 
 function k01Project(x, y, z){
-  const originX = 250;
-  const originY = 345;
+  const originX = 245;
+  const originY = 395;
 
   return {
-    x: originX + x * 62 - y * 35,
-    y: originY - y * 25 - z * 52
+    x: originX + x * 64 - y * 34,
+    y: originY - y * 25 - z * 58
   };
 }
 
-function k01Point(){
+function k01RandomPoint(){
   return {
-    x: pick([1, 2, 3, 4, 5]),
-    y: pick([1, 2, 3, 4, 5]),
-    z: pick([1, 2, 3, 4, 5])
+    x: pick([1, 2, 3, 4]),
+    y: pick([1, 2, 3, 4]),
+    z: pick([1, 2, 3, 4])
   };
 }
 
@@ -55,55 +54,43 @@ function k01Line(a, b, className){
 
 
 /* -----------------------------------------
-   Würfelgitter
+   Vollständiges Röntgengitter
    ----------------------------------------- */
 
-function k01FullGrid(){
+function k01Grid(){
   const lines = [];
 
-  /*
-    Linien parallel zur x-Achse:
-    y und z bleiben konstant.
-  */
-  for(let y = 0; y <= K01_SIZE; y++){
-    for(let z = 0; z <= K01_SIZE; z++){
+  for(let y = 0; y <= K01_MAX; y++){
+    for(let z = 0; z <= K01_MAX; z++){
       lines.push(
         k01Line(
           k01Project(0, y, z),
-          k01Project(K01_SIZE, y, z),
-          "k01-grid-line"
+          k01Project(K01_MAX, y, z),
+          "k01-grid"
         )
       );
     }
   }
 
-  /*
-    Linien parallel zur y-Achse:
-    x und z bleiben konstant.
-  */
-  for(let x = 0; x <= K01_SIZE; x++){
-    for(let z = 0; z <= K01_SIZE; z++){
+  for(let x = 0; x <= K01_MAX; x++){
+    for(let z = 0; z <= K01_MAX; z++){
       lines.push(
         k01Line(
           k01Project(x, 0, z),
-          k01Project(x, K01_SIZE, z),
-          "k01-grid-line"
+          k01Project(x, K01_MAX, z),
+          "k01-grid"
         )
       );
     }
   }
 
-  /*
-    Linien parallel zur z-Achse:
-    x und y bleiben konstant.
-  */
-  for(let x = 0; x <= K01_SIZE; x++){
-    for(let y = 0; y <= K01_SIZE; y++){
+  for(let x = 0; x <= K01_MAX; x++){
+    for(let y = 0; y <= K01_MAX; y++){
       lines.push(
         k01Line(
           k01Project(x, y, 0),
-          k01Project(x, y, K01_SIZE),
-          "k01-grid-line"
+          k01Project(x, y, K01_MAX),
+          "k01-grid"
         )
       );
     }
@@ -117,90 +104,80 @@ function k01FullGrid(){
    Nur Aussenkanten
    ----------------------------------------- */
 
-function k01OuterEdges(){
-  const n = K01_SIZE;
+function k01Edges(){
+  const n = K01_MAX;
 
-  const vertices = {
-    a: k01Project(0, 0, 0),
-    b: k01Project(n, 0, 0),
-    c: k01Project(n, n, 0),
-    d: k01Project(0, n, 0),
+  const p000 = k01Project(0, 0, 0);
+  const p500 = k01Project(n, 0, 0);
+  const p550 = k01Project(n, n, 0);
+  const p050 = k01Project(0, n, 0);
 
-    e: k01Project(0, 0, n),
-    f: k01Project(n, 0, n),
-    g: k01Project(n, n, n),
-    h: k01Project(0, n, n)
-  };
+  const p005 = k01Project(0, 0, n);
+  const p505 = k01Project(n, 0, n);
+  const p555 = k01Project(n, n, n);
+  const p055 = k01Project(0, n, n);
 
   return `
-    ${k01Line(vertices.a, vertices.b, "k01-edge")}
-    ${k01Line(vertices.b, vertices.c, "k01-edge")}
-    ${k01Line(vertices.c, vertices.d, "k01-edge")}
-    ${k01Line(vertices.d, vertices.a, "k01-edge")}
+    ${k01Line(p000, p500, "k01-edge")}
+    ${k01Line(p500, p550, "k01-edge")}
+    ${k01Line(p550, p050, "k01-edge")}
+    ${k01Line(p050, p000, "k01-edge")}
 
-    ${k01Line(vertices.e, vertices.f, "k01-edge")}
-    ${k01Line(vertices.f, vertices.g, "k01-edge")}
-    ${k01Line(vertices.g, vertices.h, "k01-edge")}
-    ${k01Line(vertices.h, vertices.e, "k01-edge")}
+    ${k01Line(p005, p505, "k01-edge")}
+    ${k01Line(p505, p555, "k01-edge")}
+    ${k01Line(p555, p055, "k01-edge")}
+    ${k01Line(p055, p005, "k01-edge")}
 
-    ${k01Line(vertices.a, vertices.e, "k01-edge")}
-    ${k01Line(vertices.b, vertices.f, "k01-edge")}
-    ${k01Line(vertices.c, vertices.g, "k01-edge")}
-    ${k01Line(vertices.d, vertices.h, "k01-edge")}
+    ${k01Line(p000, p005, "k01-edge")}
+    ${k01Line(p500, p505, "k01-edge")}
+    ${k01Line(p550, p555, "k01-edge")}
+    ${k01Line(p050, p055, "k01-edge")}
   `;
 }
 
 
 /* -----------------------------------------
-   Achsen und Beschriftungen
+   Achsen
    ----------------------------------------- */
 
 function k01Axes(){
-  const n = K01_SIZE;
-
   const origin = k01Project(0, 0, 0);
-  const xEnd = k01Project(n + 0.65, 0, 0);
-  const yEnd = k01Project(0, n + 0.8, 0);
-  const zEnd = k01Project(0, 0, n + 0.65);
+  const xEnd = k01Project(5.7, 0, 0);
+  const yEnd = k01Project(0, 5.8, 0);
+  const zEnd = k01Project(0, 0, 5.7);
 
-  const xLabels = [];
-  const yLabels = [];
-  const zLabels = [];
+  let labels = "";
 
-  for(let value = 1; value <= n; value++){
-    const xPoint = k01Project(value, 0, 0);
-    const yPoint = k01Project(0, value, 0);
-    const zPoint = k01Project(0, 0, value);
+  for(let value = 1; value <= K01_MAX; value++){
+    const x = k01Project(value, 0, 0);
+    const y = k01Project(0, value, 0);
+    const z = k01Project(0, 0, value);
 
-    xLabels.push(`
+    labels += `
       <text
-        x="${xPoint.x}"
-        y="${xPoint.y + 27}"
+        x="${x.x}"
+        y="${x.y + 29}"
         text-anchor="middle"
-        class="k01-axis-number">
+        class="k01-number">
         ${value}
       </text>
-    `);
 
-    yLabels.push(`
       <text
-        x="${yPoint.x - 15}"
-        y="${yPoint.y + 8}"
+        x="${y.x - 14}"
+        y="${y.y + 7}"
         text-anchor="end"
-        class="k01-axis-number">
+        class="k01-number">
         ${value}
       </text>
-    `);
 
-    zLabels.push(`
       <text
-        x="${zPoint.x - 15}"
-        y="${zPoint.y + 6}"
+        x="${z.x - 14}"
+        y="${z.y + 6}"
         text-anchor="end"
-        class="k01-axis-number">
+        class="k01-number">
         ${value}
       </text>
-    `);
+    `;
   }
 
   return `
@@ -227,17 +204,15 @@ function k01Axes(){
 
     <text
       x="${origin.x + 10}"
-      y="${origin.y + 25}"
-      class="k01-axis-number">
+      y="${origin.y + 26}"
+      class="k01-number">
       0
     </text>
 
-    ${xLabels.join("")}
-    ${yLabels.join("")}
-    ${zLabels.join("")}
+    ${labels}
 
     <text
-      x="${xEnd.x + 15}"
+      x="${xEnd.x + 14}"
       y="${xEnd.y + 7}"
       class="k01-axis-label">
       x
@@ -245,7 +220,7 @@ function k01Axes(){
 
     <text
       x="${yEnd.x - 10}"
-      y="${yEnd.y - 8}"
+      y="${yEnd.y - 7}"
       class="k01-axis-label">
       y
     </text>
@@ -261,12 +236,11 @@ function k01Axes(){
 
 
 /* -----------------------------------------
-   Hilfslinien eines Punktes
+   Punkt und Hilfslinien
    ----------------------------------------- */
 
-function k01PointGuides(point){
+function k01PointMarkup(point, label){
   const p = k01Project(point.x, point.y, point.z);
-
   const ground = k01Project(point.x, point.y, 0);
   const xBase = k01Project(point.x, 0, 0);
   const yBase = k01Project(0, point.y, 0);
@@ -277,40 +251,22 @@ function k01PointGuides(point){
     ${k01Line(ground, yBase, "k01-guide")}
 
     <circle
-      cx="${ground.x}"
-      cy="${ground.y}"
-      r="4"
-      class="k01-ground-point">
-    </circle>
-  `;
-}
-
-
-/* -----------------------------------------
-   Einzelner Punkt
-   ----------------------------------------- */
-
-function k01PointMarkup(point, label = "A"){
-  const p = k01Project(point.x, point.y, point.z);
-
-  return `
-    <circle
       cx="${p.x}"
       cy="${p.y}"
-      r="13"
+      r="14"
       class="k01-point-ring">
     </circle>
 
     <circle
       cx="${p.x}"
       cy="${p.y}"
-      r="7"
+      r="8"
       class="k01-point">
     </circle>
 
     <text
-      x="${p.x + 14}"
-      y="${p.y - 12}"
+      x="${p.x + 16}"
+      y="${p.y - 13}"
       class="k01-point-label">
       ${label}
     </text>
@@ -320,39 +276,27 @@ function k01PointMarkup(point, label = "A"){
 
 /* -----------------------------------------
    Komplettes SVG
-   mode:
-   easy = vollständiges Röntgengitter
-   hard = nur Würfelkanten und Achsen
+   easy = vollständiges Gitter
+   hard = nur Aussenkanten
    ----------------------------------------- */
 
-function k01CubeSvg(point, options = {}){
-  const mode = options.mode || "easy";
-  const label = options.label || "A";
-  const showGuides = options.showGuides !== false;
-
+function k01CubeSvg(point, mode = "easy", label = "A"){
   return `
-    <div class="k01-svg-wrap">
+    <div class="k01-wrap">
 
       <svg
         class="k01-svg"
         viewBox="0 0 650 540"
         role="img"
-        aria-label="Räumliches Koordinatensystem mit Punkt ${label}">
+        aria-label="Koordinatenwürfel mit Punkt ${label}">
 
         ${
           mode === "easy"
-            ? k01FullGrid()
-            : k01OuterEdges()
+            ? k01Grid()
+            : k01Edges()
         }
 
         ${k01Axes()}
-
-        ${
-          showGuides
-            ? k01PointGuides(point)
-            : ""
-        }
-
         ${k01PointMarkup(point, label)}
 
       </svg>
@@ -376,11 +320,11 @@ function k01CubeSvg(point, options = {}){
 
 
 /* -----------------------------------------
-   1. Einfach: vollständiges Gitter
+   Einfach
    ----------------------------------------- */
 
-function genK01ReadEasy(){
-  const point = k01Point();
+function genK01Easy(){
+  const point = k01RandomPoint();
   const label = pick(["A", "B", "C"]);
 
   return {
@@ -394,15 +338,11 @@ function genK01ReadEasy(){
         Der Punkt <strong>${label}</strong> ist im Koordinatenwürfel markiert.
       </p>
 
-      ${k01CubeSvg(point, {
-        mode: "easy",
-        label: label,
-        showGuides: true
-      })}
+      ${k01CubeSvg(point, "easy", label)}
     `,
 
     ask:
-      `Bestimme die Koordinaten von ${label}. Schreibe zum Beispiel: 2 / 4 / 3`,
+      `Bestimme die Koordinaten von ${label}. Schreibe zum Beispiel: 2 / 3 / 4`,
 
     answer:
       coordinateAnswer(point.x, point.y, point.z),
@@ -414,7 +354,7 @@ function genK01ReadEasy(){
       "Lies danach die y-Koordinate in der Tiefenrichtung ab.",
 
     hint3:
-      `Die z-Koordinate gibt die Höhe an: ${point.z}.`,
+      `Die z-Koordinate beträgt ${point.z}.`,
 
     solution: `
       <strong>
@@ -426,29 +366,25 @@ function genK01ReadEasy(){
 
 
 /* -----------------------------------------
-   2. Schwieriger: nur Würfelkanten
+   Schwierig
    ----------------------------------------- */
 
-function genK01ReadHard(){
-  const point = k01Point();
+function genK01Hard(){
+  const point = k01RandomPoint();
   const label = pick(["A", "B", "C"]);
 
   return {
     badge: "K01 · Koordinaten ablesen · schwierig",
 
     ziel:
-      "Die Koordinaten eines Punktes ohne vollständiges räumliches Gitter ablesen.",
+      "Die Koordinaten eines Punktes ohne vollständiges Gitter ablesen.",
 
     text: `
       <p>
-        Im Würfel sind nur die Achsen und Aussenkanten sichtbar.
+        Im Koordinatenwürfel sind nur die Aussenkanten sichtbar.
       </p>
 
-      ${k01CubeSvg(point, {
-        mode: "hard",
-        label: label,
-        showGuides: true
-      })}
+      ${k01CubeSvg(point, "hard", label)}
     `,
 
     ask:
@@ -461,10 +397,10 @@ function genK01ReadHard(){
       "Projiziere den Punkt gedanklich auf die Grundfläche.",
 
     hint2:
-      "Bestimme auf der Grundfläche zuerst x und y.",
+      "Bestimme auf der Grundfläche x und y.",
 
     hint3:
-      `Die Höhe des Punktes beträgt ${point.z}.`,
+      `Die Höhe z beträgt ${point.z}.`,
 
     solution: `
       <strong>
@@ -476,47 +412,35 @@ function genK01ReadHard(){
 
 
 /* -----------------------------------------
-   3. Fehlende Koordinate
+   Fehlende Koordinate
    ----------------------------------------- */
 
-function genK01MissingCoordinate(){
-  const point = k01Point();
-  const label = "A";
+function genK01Missing(){
+  const point = k01RandomPoint();
   const missing = pick(["x", "y", "z"]);
 
-  const displayed = {
-    x:
-      `( ? / ${point.y} / ${point.z} )`,
-
-    y:
-      `( ${point.x} / ? / ${point.z} )`,
-
-    z:
-      `( ${point.x} / ${point.y} / ? )`
+  const shown = {
+    x: `( ? / ${point.y} / ${point.z} )`,
+    y: `( ${point.x} / ? / ${point.z} )`,
+    z: `( ${point.x} / ${point.y} / ? )`
   };
 
   return {
     badge: "K01 · Koordinate ergänzen",
 
     ziel:
-      "Eine fehlende räumliche Koordinate bestimmen.",
+      "Eine fehlende Koordinate ergänzen.",
 
     text: `
       <p>
-        Eine Koordinate von Punkt <strong>${label}</strong> fehlt:
+        Vom Punkt <strong>A</strong> fehlt eine Koordinate:
       </p>
 
       <p class="k01-given">
-        <strong>
-          ${label} ${displayed[missing]}
-        </strong>
+        <strong>A ${shown[missing]}</strong>
       </p>
 
-      ${k01CubeSvg(point, {
-        mode: "easy",
-        label: label,
-        showGuides: true
-      })}
+      ${k01CubeSvg(point, "easy", "A")}
     `,
 
     ask:
@@ -530,7 +454,7 @@ function genK01MissingCoordinate(){
 
     hint2:
       missing === "z"
-        ? "Die z-Koordinate beschreibt die Höhe."
+        ? "Die z-Koordinate gibt die Höhe an."
         : "Lies die Koordinate auf der Grundfläche ab.",
 
     hint3:
@@ -538,57 +462,8 @@ function genK01MissingCoordinate(){
 
     solution: `
       <strong>
-        ${label} (${point.x} / ${point.y} / ${point.z})
+        A (${point.x} / ${point.y} / ${point.z})
       </strong>
-    `
-  };
-}
-
-
-/* -----------------------------------------
-   4. Höhe bestimmen
-   ----------------------------------------- */
-
-function genK01Height(){
-  const point = k01Point();
-
-  return {
-    badge: "K01 · z-Koordinate",
-
-    ziel:
-      "Die z-Koordinate als Höhe eines Punktes bestimmen.",
-
-    text: `
-      <p>
-        Punkt <strong>A</strong> ist im Koordinatenwürfel markiert.
-      </p>
-
-      ${k01CubeSvg(point, {
-        mode: "easy",
-        label: "A",
-        showGuides: true
-      })}
-    `,
-
-    ask:
-      "Wie gross ist die z-Koordinate von A?",
-
-    answer:
-      numberAnswer(point.z),
-
-    hint1:
-      "Die z-Achse zeigt senkrecht nach oben.",
-
-    hint2:
-      "Die z-Koordinate ist die dritte Koordinate.",
-
-    hint3:
-      `Punkt A liegt auf der Höhe ${point.z}.`,
-
-    solution: `
-      Die z-Koordinate beträgt
-
-      <strong>${point.z}</strong>.
     `
   };
 }
@@ -602,12 +477,11 @@ TRAINERS["koordinaten"] = {
   title: "K01 · Räumliche Koordinaten",
 
   info:
-    "Koordinaten in einem Würfel ablesen und ergänzen.",
+    "Koordinaten in einem räumlichen Gitter ablesen und ergänzen.",
 
   generators: [
-    genK01ReadEasy,
-    genK01ReadHard,
-    genK01MissingCoordinate,
-    genK01Height
+    genK01Easy,
+    genK01Hard,
+    genK01Missing
   ]
 };
