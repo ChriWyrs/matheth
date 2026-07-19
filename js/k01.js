@@ -1,6 +1,7 @@
+
 /* =========================================
-   K01 · 3D-Koordinaten im Gelände
-   Thema 2 · Stuckli – Nüsell – Wildspitz
+   K01 · Räumliche Koordinaten
+   Neutraler Koordinatenwürfel
    ========================================= */
 
 
@@ -17,68 +18,30 @@ function coordinateAnswer(x, y, z){
 
 
 /* -----------------------------------------
-   Projektion
+   Grundeinstellungen
    ----------------------------------------- */
 
-function project3D(x, y, z){
-  const originX = 305;
-  const originY = 330;
+const K01_SIZE = 5;
+
+function k01Project(x, y, z){
+  const originX = 250;
+  const originY = 345;
 
   return {
-    x: originX + x * 4.4 - y * 2.9,
-    y: originY - y * 1.55 - z * 0.5
+    x: originX + x * 62 - y * 35,
+    y: originY - y * 25 - z * 52
   };
 }
 
-
-/* -----------------------------------------
-   Zufälliger Koordinatenpunkt
-   ----------------------------------------- */
-
-function createCoordinateCase(){
-  const horizontalValues = [10, 20, 30, 40, 50];
-  const heightValues = [50, 100, 150, 200, 250, 300];
-
+function k01Point(){
   return {
-    x: pick(horizontalValues),
-    y: pick(horizontalValues),
-    z: pick(heightValues)
+    x: pick([1, 2, 3, 4, 5]),
+    y: pick([1, 2, 3, 4, 5]),
+    z: pick([1, 2, 3, 4, 5])
   };
 }
 
-
-/* -----------------------------------------
-   Mehrere verschiedene Punkte erzeugen
-   ----------------------------------------- */
-
-function createCoordinatePoints(count = 4){
-  const labels = ["A", "B", "C", "D"];
-  const points = [];
-  const used = new Set();
-
-  while(points.length < count){
-    const point = createCoordinateCase();
-    const key = `${point.x}-${point.y}-${point.z}`;
-
-    if(!used.has(key)){
-      used.add(key);
-
-      points.push({
-        ...point,
-        label: labels[points.length]
-      });
-    }
-  }
-
-  return points;
-}
-
-
-/* -----------------------------------------
-   SVG-Hilfsfunktionen
-   ----------------------------------------- */
-
-function svgLine(a, b, className){
+function k01Line(a, b, className){
   return `
     <line
       x1="${a.x}"
@@ -90,38 +53,235 @@ function svgLine(a, b, className){
   `;
 }
 
-function mountainDecoration(){
+
+/* -----------------------------------------
+   Würfelgitter
+   ----------------------------------------- */
+
+function k01FullGrid(){
+  const lines = [];
+
+  /*
+    Linien parallel zur x-Achse:
+    y und z bleiben konstant.
+  */
+  for(let y = 0; y <= K01_SIZE; y++){
+    for(let z = 0; z <= K01_SIZE; z++){
+      lines.push(
+        k01Line(
+          k01Project(0, y, z),
+          k01Project(K01_SIZE, y, z),
+          "k01-grid-line"
+        )
+      );
+    }
+  }
+
+  /*
+    Linien parallel zur y-Achse:
+    x und z bleiben konstant.
+  */
+  for(let x = 0; x <= K01_SIZE; x++){
+    for(let z = 0; z <= K01_SIZE; z++){
+      lines.push(
+        k01Line(
+          k01Project(x, 0, z),
+          k01Project(x, K01_SIZE, z),
+          "k01-grid-line"
+        )
+      );
+    }
+  }
+
+  /*
+    Linien parallel zur z-Achse:
+    x und y bleiben konstant.
+  */
+  for(let x = 0; x <= K01_SIZE; x++){
+    for(let y = 0; y <= K01_SIZE; y++){
+      lines.push(
+        k01Line(
+          k01Project(x, y, 0),
+          k01Project(x, y, K01_SIZE),
+          "k01-grid-line"
+        )
+      );
+    }
+  }
+
+  return lines.join("");
+}
+
+
+/* -----------------------------------------
+   Nur Aussenkanten
+   ----------------------------------------- */
+
+function k01OuterEdges(){
+  const n = K01_SIZE;
+
+  const vertices = {
+    a: k01Project(0, 0, 0),
+    b: k01Project(n, 0, 0),
+    c: k01Project(n, n, 0),
+    d: k01Project(0, n, 0),
+
+    e: k01Project(0, 0, n),
+    f: k01Project(n, 0, n),
+    g: k01Project(n, n, n),
+    h: k01Project(0, n, n)
+  };
+
   return `
-    <g class="coord-mountains" aria-hidden="true">
+    ${k01Line(vertices.a, vertices.b, "k01-edge")}
+    ${k01Line(vertices.b, vertices.c, "k01-edge")}
+    ${k01Line(vertices.c, vertices.d, "k01-edge")}
+    ${k01Line(vertices.d, vertices.a, "k01-edge")}
 
-      <path
-        d="M84 286
-           L130 225
-           L155 254
-           L194 199
-           L243 283
-           Z">
-      </path>
+    ${k01Line(vertices.e, vertices.f, "k01-edge")}
+    ${k01Line(vertices.f, vertices.g, "k01-edge")}
+    ${k01Line(vertices.g, vertices.h, "k01-edge")}
+    ${k01Line(vertices.h, vertices.e, "k01-edge")}
 
-      <path
-        d="M390 285
-           L433 224
-           L458 254
-           L487 213
-           L548 286
-           Z">
-      </path>
+    ${k01Line(vertices.a, vertices.e, "k01-edge")}
+    ${k01Line(vertices.b, vertices.f, "k01-edge")}
+    ${k01Line(vertices.c, vertices.g, "k01-edge")}
+    ${k01Line(vertices.d, vertices.h, "k01-edge")}
+  `;
+}
 
-      <path
-        d="M174 283
-           L212 241
-           L245 265
-           L278 219
-           L327 284
-           Z">
-      </path>
 
-    </g>
+/* -----------------------------------------
+   Achsen und Beschriftungen
+   ----------------------------------------- */
+
+function k01Axes(){
+  const n = K01_SIZE;
+
+  const origin = k01Project(0, 0, 0);
+  const xEnd = k01Project(n + 0.65, 0, 0);
+  const yEnd = k01Project(0, n + 0.8, 0);
+  const zEnd = k01Project(0, 0, n + 0.65);
+
+  const xLabels = [];
+  const yLabels = [];
+  const zLabels = [];
+
+  for(let value = 1; value <= n; value++){
+    const xPoint = k01Project(value, 0, 0);
+    const yPoint = k01Project(0, value, 0);
+    const zPoint = k01Project(0, 0, value);
+
+    xLabels.push(`
+      <text
+        x="${xPoint.x}"
+        y="${xPoint.y + 27}"
+        text-anchor="middle"
+        class="k01-axis-number">
+        ${value}
+      </text>
+    `);
+
+    yLabels.push(`
+      <text
+        x="${yPoint.x - 15}"
+        y="${yPoint.y + 8}"
+        text-anchor="end"
+        class="k01-axis-number">
+        ${value}
+      </text>
+    `);
+
+    zLabels.push(`
+      <text
+        x="${zPoint.x - 15}"
+        y="${zPoint.y + 6}"
+        text-anchor="end"
+        class="k01-axis-number">
+        ${value}
+      </text>
+    `);
+  }
+
+  return `
+    <defs>
+      <marker
+        id="k01-arrow"
+        viewBox="0 0 10 10"
+        refX="8"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        orient="auto">
+
+        <path
+          d="M 0 0 L 10 5 L 0 10 z"
+          class="k01-arrow-head">
+        </path>
+      </marker>
+    </defs>
+
+    ${k01Line(origin, xEnd, "k01-axis")}
+    ${k01Line(origin, yEnd, "k01-axis")}
+    ${k01Line(origin, zEnd, "k01-axis")}
+
+    <text
+      x="${origin.x + 10}"
+      y="${origin.y + 25}"
+      class="k01-axis-number">
+      0
+    </text>
+
+    ${xLabels.join("")}
+    ${yLabels.join("")}
+    ${zLabels.join("")}
+
+    <text
+      x="${xEnd.x + 15}"
+      y="${xEnd.y + 7}"
+      class="k01-axis-label">
+      x
+    </text>
+
+    <text
+      x="${yEnd.x - 10}"
+      y="${yEnd.y - 8}"
+      class="k01-axis-label">
+      y
+    </text>
+
+    <text
+      x="${zEnd.x + 13}"
+      y="${zEnd.y + 7}"
+      class="k01-axis-label">
+      z
+    </text>
+  `;
+}
+
+
+/* -----------------------------------------
+   Hilfslinien eines Punktes
+   ----------------------------------------- */
+
+function k01PointGuides(point){
+  const p = k01Project(point.x, point.y, point.z);
+
+  const ground = k01Project(point.x, point.y, 0);
+  const xBase = k01Project(point.x, 0, 0);
+  const yBase = k01Project(0, point.y, 0);
+
+  return `
+    ${k01Line(p, ground, "k01-guide")}
+    ${k01Line(ground, xBase, "k01-guide")}
+    ${k01Line(ground, yBase, "k01-guide")}
+
+    <circle
+      cx="${ground.x}"
+      cy="${ground.y}"
+      r="4"
+      class="k01-ground-point">
+    </circle>
   `;
 }
 
@@ -130,438 +290,79 @@ function mountainDecoration(){
    Einzelner Punkt
    ----------------------------------------- */
 
-function terrainCoordinateSvg(point, options = {}){
-  const label = options.label || point.label || "A";
-  const showGuides = options.showGuides !== false;
-  const showNote = options.showNote !== false;
-
-  const xValues = [0, 10, 20, 30, 40, 50];
-  const yValues = [0, 10, 20, 30, 40, 50];
-  const zValues = [50, 100, 150, 200, 250, 300];
-
-  const origin = project3D(0, 0, 0);
-  const point3D = project3D(point.x, point.y, point.z);
-  const groundPoint = project3D(point.x, point.y, 0);
-  const xProjection = project3D(point.x, 0, 0);
-  const yProjection = project3D(0, point.y, 0);
-
-  const xGrid = xValues.map(x => {
-    return svgLine(
-      project3D(x, 0, 0),
-      project3D(x, 50, 0),
-      "coord-grid-line"
-    );
-  }).join("");
-
-  const yGrid = yValues.map(y => {
-    return svgLine(
-      project3D(0, y, 0),
-      project3D(50, y, 0),
-      "coord-grid-line"
-    );
-  }).join("");
-
-  const xLabels = xValues.slice(1).map(x => {
-    const p = project3D(x, 0, 0);
-
-    return `
-      <text
-        x="${p.x}"
-        y="${p.y + 25}"
-        text-anchor="middle"
-        class="coord-axis-number">
-        ${x}
-      </text>
-    `;
-  }).join("");
-
-  const yLabels = yValues.slice(1).map(y => {
-    const p = project3D(0, y, 0);
-
-    return `
-      <text
-        x="${p.x - 15}"
-        y="${p.y + 5}"
-        text-anchor="end"
-        class="coord-axis-number">
-        ${y}
-      </text>
-    `;
-  }).join("");
-
-  const heightMarks = zValues.map(z => {
-    const p = project3D(0, 0, z);
-
-    return `
-      <line
-        x1="${p.x - 7}"
-        y1="${p.y}"
-        x2="${p.x + 7}"
-        y2="${p.y}"
-        class="coord-height-mark">
-      </line>
-
-      <text
-        x="${p.x - 13}"
-        y="${p.y + 5}"
-        text-anchor="end"
-        class="coord-axis-number">
-        ${z}
-      </text>
-    `;
-  }).join("");
-
-  const guides = showGuides
-    ? `
-      ${svgLine(point3D, groundPoint, "coord-guide coord-guide-height")}
-      ${svgLine(groundPoint, xProjection, "coord-guide")}
-      ${svgLine(groundPoint, yProjection, "coord-guide")}
-
-      <circle
-        cx="${groundPoint.x}"
-        cy="${groundPoint.y}"
-        r="4"
-        class="coord-ground-point">
-      </circle>
-    `
-    : "";
+function k01PointMarkup(point, label = "A"){
+  const p = k01Project(point.x, point.y, point.z);
 
   return `
-    <div class="coordinate-svg-wrap">
+    <circle
+      cx="${p.x}"
+      cy="${p.y}"
+      r="13"
+      class="k01-point-ring">
+    </circle>
 
-      <svg
-        class="coordinate-svg"
-        viewBox="0 0 620 410"
-        role="img"
-        aria-label="Dreidimensionales Koordinatensystem mit Punkt ${label}">
+    <circle
+      cx="${p.x}"
+      cy="${p.y}"
+      r="7"
+      class="k01-point">
+    </circle>
 
-        <defs>
-          <marker
-            id="coord-arrow"
-            viewBox="0 0 10 10"
-            refX="8"
-            refY="5"
-            markerWidth="7"
-            markerHeight="7"
-            orient="auto-start-reverse">
-
-            <path
-              d="M 0 0 L 10 5 L 0 10 z"
-              class="coord-arrow-head">
-            </path>
-          </marker>
-        </defs>
-
-        ${mountainDecoration()}
-
-        <polygon
-          points="
-            ${project3D(0,0,0).x},${project3D(0,0,0).y}
-            ${project3D(50,0,0).x},${project3D(50,0,0).y}
-            ${project3D(50,50,0).x},${project3D(50,50,0).y}
-            ${project3D(0,50,0).x},${project3D(0,50,0).y}
-          "
-          class="coord-ground">
-        </polygon>
-
-        ${xGrid}
-        ${yGrid}
-
-        ${svgLine(
-          origin,
-          project3D(56, 0, 0),
-          "coord-axis coord-axis-arrow"
-        )}
-
-        ${svgLine(
-          origin,
-          project3D(0, 56, 0),
-          "coord-axis coord-axis-arrow"
-        )}
-
-        ${svgLine(
-          origin,
-          project3D(0, 0, 335),
-          "coord-axis coord-axis-arrow"
-        )}
-
-        ${xLabels}
-        ${yLabels}
-        ${heightMarks}
-
-        <text
-          x="${project3D(57,0,0).x + 4}"
-          y="${project3D(57,0,0).y + 20}"
-          class="coord-axis-label">
-          x
-        </text>
-
-        <text
-          x="${project3D(0,57,0).x - 12}"
-          y="${project3D(0,57,0).y - 2}"
-          class="coord-axis-label">
-          y
-        </text>
-
-        <text
-          x="${project3D(0,0,337).x + 12}"
-          y="${project3D(0,0,337).y + 4}"
-          class="coord-axis-label">
-          Höhe
-        </text>
-
-        <text
-          x="${origin.x + 11}"
-          y="${origin.y + 19}"
-          class="coord-origin-label">
-          0
-        </text>
-
-        ${guides}
-
-        <circle
-          cx="${point3D.x}"
-          cy="${point3D.y}"
-          r="15"
-          class="coord-point-ring">
-        </circle>
-
-        <circle
-          cx="${point3D.x}"
-          cy="${point3D.y}"
-          r="8"
-          class="coord-point">
-        </circle>
-
-        <text
-          x="${point3D.x + 18}"
-          y="${point3D.y - 13}"
-          class="coord-point-label">
-          ${label}
-        </text>
-
-      </svg>
-
-      ${
-        showNote
-          ? `
-            <p class="coordinate-note">
-              Lies zuerst x und y auf der Grundfläche und danach die Höhe ab.
-            </p>
-          `
-          : ""
-      }
-
-    </div>
+    <text
+      x="${p.x + 14}"
+      y="${p.y - 12}"
+      class="k01-point-label">
+      ${label}
+    </text>
   `;
 }
 
 
 /* -----------------------------------------
-   Darstellung mit vier Punkten
+   Komplettes SVG
+   mode:
+   easy = vollständiges Röntgengitter
+   hard = nur Würfelkanten und Achsen
    ----------------------------------------- */
 
-function terrainMultiplePointsSvg(points){
-  const xValues = [0, 10, 20, 30, 40, 50];
-  const yValues = [0, 10, 20, 30, 40, 50];
-  const zValues = [50, 100, 150, 200, 250, 300];
-
-  const origin = project3D(0, 0, 0);
-
-  const xGrid = xValues.map(x => {
-    return svgLine(
-      project3D(x, 0, 0),
-      project3D(x, 50, 0),
-      "coord-grid-line"
-    );
-  }).join("");
-
-  const yGrid = yValues.map(y => {
-    return svgLine(
-      project3D(0, y, 0),
-      project3D(50, y, 0),
-      "coord-grid-line"
-    );
-  }).join("");
-
-  const xLabels = xValues.slice(1).map(x => {
-    const p = project3D(x, 0, 0);
-
-    return `
-      <text
-        x="${p.x}"
-        y="${p.y + 25}"
-        text-anchor="middle"
-        class="coord-axis-number">
-        ${x}
-      </text>
-    `;
-  }).join("");
-
-  const yLabels = yValues.slice(1).map(y => {
-    const p = project3D(0, y, 0);
-
-    return `
-      <text
-        x="${p.x - 15}"
-        y="${p.y + 5}"
-        text-anchor="end"
-        class="coord-axis-number">
-        ${y}
-      </text>
-    `;
-  }).join("");
-
-  const heightMarks = zValues.map(z => {
-    const p = project3D(0, 0, z);
-
-    return `
-      <line
-        x1="${p.x - 7}"
-        y1="${p.y}"
-        x2="${p.x + 7}"
-        y2="${p.y}"
-        class="coord-height-mark">
-      </line>
-
-      <text
-        x="${p.x - 13}"
-        y="${p.y + 5}"
-        text-anchor="end"
-        class="coord-axis-number">
-        ${z}
-      </text>
-    `;
-  }).join("");
-
-  const pointElements = points.map(point => {
-    const p = project3D(point.x, point.y, point.z);
-    const ground = project3D(point.x, point.y, 0);
-
-    return `
-      ${svgLine(p, ground, "coord-guide coord-guide-height")}
-
-      <circle
-        cx="${p.x}"
-        cy="${p.y}"
-        r="13"
-        class="coord-point-ring">
-      </circle>
-
-      <circle
-        cx="${p.x}"
-        cy="${p.y}"
-        r="7"
-        class="coord-point">
-      </circle>
-
-      <text
-        x="${p.x + 15}"
-        y="${p.y - 11}"
-        class="coord-point-label">
-        ${point.label}
-      </text>
-    `;
-  }).join("");
+function k01CubeSvg(point, options = {}){
+  const mode = options.mode || "easy";
+  const label = options.label || "A";
+  const showGuides = options.showGuides !== false;
 
   return `
-    <div class="coordinate-svg-wrap">
+    <div class="k01-svg-wrap">
 
       <svg
-        class="coordinate-svg"
-        viewBox="0 0 620 410"
+        class="k01-svg"
+        viewBox="0 0 650 540"
         role="img"
-        aria-label="Dreidimensionales Koordinatensystem mit vier Punkten">
+        aria-label="Räumliches Koordinatensystem mit Punkt ${label}">
 
-        <defs>
-          <marker
-            id="coord-arrow-multiple"
-            viewBox="0 0 10 10"
-            refX="8"
-            refY="5"
-            markerWidth="7"
-            markerHeight="7"
-            orient="auto-start-reverse">
+        ${
+          mode === "easy"
+            ? k01FullGrid()
+            : k01OuterEdges()
+        }
 
-            <path
-              d="M 0 0 L 10 5 L 0 10 z"
-              class="coord-arrow-head">
-            </path>
-          </marker>
-        </defs>
+        ${k01Axes()}
 
-        ${mountainDecoration()}
+        ${
+          showGuides
+            ? k01PointGuides(point)
+            : ""
+        }
 
-        <polygon
-          points="
-            ${project3D(0,0,0).x},${project3D(0,0,0).y}
-            ${project3D(50,0,0).x},${project3D(50,0,0).y}
-            ${project3D(50,50,0).x},${project3D(50,50,0).y}
-            ${project3D(0,50,0).x},${project3D(0,50,0).y}
-          "
-          class="coord-ground">
-        </polygon>
-
-        ${xGrid}
-        ${yGrid}
-
-        <line
-          x1="${origin.x}"
-          y1="${origin.y}"
-          x2="${project3D(56,0,0).x}"
-          y2="${project3D(56,0,0).y}"
-          class="coord-axis"
-          marker-end="url(#coord-arrow-multiple)">
-        </line>
-
-        <line
-          x1="${origin.x}"
-          y1="${origin.y}"
-          x2="${project3D(0,56,0).x}"
-          y2="${project3D(0,56,0).y}"
-          class="coord-axis"
-          marker-end="url(#coord-arrow-multiple)">
-        </line>
-
-        <line
-          x1="${origin.x}"
-          y1="${origin.y}"
-          x2="${project3D(0,0,335).x}"
-          y2="${project3D(0,0,335).y}"
-          class="coord-axis"
-          marker-end="url(#coord-arrow-multiple)">
-        </line>
-
-        ${xLabels}
-        ${yLabels}
-        ${heightMarks}
-        ${pointElements}
-
-        <text
-          x="${project3D(57,0,0).x + 4}"
-          y="${project3D(57,0,0).y + 20}"
-          class="coord-axis-label">
-          x
-        </text>
-
-        <text
-          x="${project3D(0,57,0).x - 12}"
-          y="${project3D(0,57,0).y - 2}"
-          class="coord-axis-label">
-          y
-        </text>
-
-        <text
-          x="${project3D(0,0,337).x + 12}"
-          y="${project3D(0,0,337).y + 4}"
-          class="coord-axis-label">
-          Höhe
-        </text>
+        ${k01PointMarkup(point, label)}
 
       </svg>
 
-      <p class="coordinate-note">
-        Vergleiche alle drei Koordinaten sorgfältig.
+      <p class="k01-note">
+        ${
+          mode === "easy"
+            ? "Alle Gitterlinien sind eingezeichnet."
+            : "Nur die Achsen und Aussenkanten sind eingezeichnet."
+        }
       </p>
 
     </div>
@@ -575,210 +376,219 @@ function terrainMultiplePointsSvg(points){
 
 
 /* -----------------------------------------
-   1. Alle Koordinaten ablesen
+   1. Einfach: vollständiges Gitter
    ----------------------------------------- */
 
-function genCoordinateRead(){
-  const point = createCoordinateCase();
-  const label = pick(["A", "B", "C", "D"]);
+function genK01ReadEasy(){
+  const point = k01Point();
+  const label = pick(["A", "B", "C"]);
 
   return {
-    badge: "K01 · Koordinaten ablesen",
+    badge: "K01 · Koordinaten ablesen · einfach",
 
     ziel:
-      "Die drei Koordinaten eines Punktes in einer räumlichen Darstellung ablesen.",
+      "Die Koordinaten eines Punktes im vollständigen räumlichen Gitter ablesen.",
 
     text: `
       <p>
-        Im Gelände ist der Punkt <strong>${label}</strong> markiert.
+        Der Punkt <strong>${label}</strong> ist im Koordinatenwürfel markiert.
       </p>
 
-      ${terrainCoordinateSvg(point, { label })}
+      ${k01CubeSvg(point, {
+        mode: "easy",
+        label: label,
+        showGuides: true
+      })}
     `,
 
     ask:
-      `Bestimme die Koordinaten von ${label}. Schreibe zum Beispiel: 20 / 30 / 150`,
+      `Bestimme die Koordinaten von ${label}. Schreibe zum Beispiel: 2 / 4 / 3`,
 
     answer:
       coordinateAnswer(point.x, point.y, point.z),
 
     hint1:
-      "Die erste und die zweite Koordinate liest du auf der Grundfläche ab.",
+      "Lies zuerst die x-Koordinate ab.",
 
     hint2:
-      "Verfolge die gestrichelten Linien bis zu den x- und y-Achsen.",
+      "Lies danach die y-Koordinate in der Tiefenrichtung ab.",
 
     hint3:
-      `Die dritte Koordinate ist die Höhe ${point.z} m.`,
+      `Die z-Koordinate gibt die Höhe an: ${point.z}.`,
 
     solution: `
-      Der Punkt liegt bei
-
       <strong>
         ${label} (${point.x} / ${point.y} / ${point.z})
-      </strong>.
+      </strong>
     `
   };
 }
 
 
 /* -----------------------------------------
-   2. Höhe ablesen
+   2. Schwieriger: nur Würfelkanten
    ----------------------------------------- */
 
-function genCoordinateHeight(){
-  const point = createCoordinateCase();
-  const label = pick(["A", "B", "C", "D"]);
+function genK01ReadHard(){
+  const point = k01Point();
+  const label = pick(["A", "B", "C"]);
 
   return {
-    badge: "K01 · Höhe ablesen",
+    badge: "K01 · Koordinaten ablesen · schwierig",
 
     ziel:
-      "Die Höhenkoordinate eines Punktes ablesen.",
+      "Die Koordinaten eines Punktes ohne vollständiges räumliches Gitter ablesen.",
 
     text: `
       <p>
-        Der Punkt <strong>${label}</strong> liegt im dargestellten Gelände.
+        Im Würfel sind nur die Achsen und Aussenkanten sichtbar.
       </p>
 
-      ${terrainCoordinateSvg(point, { label })}
+      ${k01CubeSvg(point, {
+        mode: "hard",
+        label: label,
+        showGuides: true
+      })}
     `,
 
     ask:
-      `Wie gross ist die Höhenkoordinate von ${label}?`,
+      `Bestimme die Koordinaten von ${label}.`,
 
     answer:
-      numberAnswer(point.z),
+      coordinateAnswer(point.x, point.y, point.z),
 
     hint1:
-      "Die Höhenkoordinate ist die dritte Koordinate.",
+      "Projiziere den Punkt gedanklich auf die Grundfläche.",
 
     hint2:
-      "Verfolge die senkrechte gestrichelte Linie.",
+      "Bestimme auf der Grundfläche zuerst x und y.",
 
     hint3:
-      "Vergleiche den Punkt mit der Höhenskala links.",
+      `Die Höhe des Punktes beträgt ${point.z}.`,
 
     solution: `
-      Die Höhenkoordinate von ${label} beträgt
-
-      <strong>${point.z} m</strong>.
+      <strong>
+        ${label} (${point.x} / ${point.y} / ${point.z})
+      </strong>
     `
   };
 }
 
 
 /* -----------------------------------------
-   3. Fehlende x- oder y-Koordinate
+   3. Fehlende Koordinate
    ----------------------------------------- */
 
-function genCoordinateMissing(){
-  const point = createCoordinateCase();
-  const label = pick(["A", "B", "C", "D"]);
-  const missing = pick(["x", "y"]);
+function genK01MissingCoordinate(){
+  const point = k01Point();
+  const label = "A";
+  const missing = pick(["x", "y", "z"]);
 
-  const shownCoordinates =
-    missing === "x"
-      ? `( ? / ${point.y} / ${point.z} )`
-      : `( ${point.x} / ? / ${point.z} )`;
+  const displayed = {
+    x:
+      `( ? / ${point.y} / ${point.z} )`,
 
-  const correctValue =
-    missing === "x"
-      ? point.x
-      : point.y;
+    y:
+      `( ${point.x} / ? / ${point.z} )`,
+
+    z:
+      `( ${point.x} / ${point.y} / ? )`
+  };
 
   return {
-    badge: "K01 · Fehlende Koordinate",
+    badge: "K01 · Koordinate ergänzen",
 
     ziel:
-      "Eine fehlende Koordinate aus der räumlichen Darstellung bestimmen.",
+      "Eine fehlende räumliche Koordinate bestimmen.",
 
     text: `
       <p>
-        Vom Punkt <strong>${label}</strong> sind zwei Koordinaten bekannt:
+        Eine Koordinate von Punkt <strong>${label}</strong> fehlt:
       </p>
 
-      <p class="coordinate-given">
-        <strong>${label} ${shownCoordinates}</strong>
+      <p class="k01-given">
+        <strong>
+          ${label} ${displayed[missing]}
+        </strong>
       </p>
 
-      ${terrainCoordinateSvg(point, { label })}
+      ${k01CubeSvg(point, {
+        mode: "easy",
+        label: label,
+        showGuides: true
+      })}
     `,
 
     ask:
-      `Welche Zahl fehlt an der Stelle der ${missing}-Koordinate?`,
+      `Welche Zahl fehlt bei der ${missing}-Koordinate?`,
 
     answer:
-      numberAnswer(correctValue),
+      numberAnswer(point[missing]),
 
     hint1:
       `Gesucht ist die ${missing}-Koordinate.`,
 
     hint2:
-      "Verfolge die passende Hilfslinie auf der Grundfläche.",
+      missing === "z"
+        ? "Die z-Koordinate beschreibt die Höhe."
+        : "Lies die Koordinate auf der Grundfläche ab.",
 
     hint3:
-      `Die gesuchte Koordinate beträgt ${correctValue}.`,
+      `Die gesuchte Zahl ist ${point[missing]}.`,
 
     solution: `
-      Der Punkt lautet vollständig:
-
       <strong>
         ${label} (${point.x} / ${point.y} / ${point.z})
-      </strong>.
+      </strong>
     `
   };
 }
 
 
 /* -----------------------------------------
-   4. Richtigen Punkt auswählen
+   4. Höhe bestimmen
    ----------------------------------------- */
 
-function genCoordinateChoosePoint(){
-  const points = createCoordinatePoints(4);
-  const target = pick(points);
+function genK01Height(){
+  const point = k01Point();
 
   return {
-    badge: "K01 · Punkt erkennen",
+    badge: "K01 · z-Koordinate",
 
     ziel:
-      "Einen Punkt anhand seiner drei Koordinaten erkennen.",
+      "Die z-Koordinate als Höhe eines Punktes bestimmen.",
 
     text: `
       <p>
-        Vier Punkte sind im Gelände eingezeichnet.
+        Punkt <strong>A</strong> ist im Koordinatenwürfel markiert.
       </p>
 
-      <p class="coordinate-given">
-        Gesucht ist der Punkt bei
-        <strong>
-          (${target.x} / ${target.y} / ${target.z})
-        </strong>.
-      </p>
-
-      ${terrainMultiplePointsSvg(points)}
+      ${k01CubeSvg(point, {
+        mode: "easy",
+        label: "A",
+        showGuides: true
+      })}
     `,
 
     ask:
-      "Welcher Punkt besitzt diese Koordinaten? Gib A, B, C oder D ein.",
+      "Wie gross ist die z-Koordinate von A?",
 
     answer:
-      target.label,
+      numberAnswer(point.z),
 
     hint1:
-      "Vergleiche zuerst die x-Koordinaten.",
+      "Die z-Achse zeigt senkrecht nach oben.",
 
     hint2:
-      "Vergleiche danach die y-Koordinaten auf der Grundfläche.",
+      "Die z-Koordinate ist die dritte Koordinate.",
 
     hint3:
-      `Der gesuchte Punkt liegt auf einer Höhe von ${target.z} m.`,
+      `Punkt A liegt auf der Höhe ${point.z}.`,
 
     solution: `
-      Die Koordinaten gehören zum Punkt
+      Die z-Koordinate beträgt
 
-      <strong>${target.label}</strong>.
+      <strong>${point.z}</strong>.
     `
   };
 }
@@ -789,15 +599,15 @@ function genCoordinateChoosePoint(){
    ========================================= */
 
 TRAINERS["koordinaten"] = {
-  title: "K01 · Koordinaten im Gelände",
+  title: "K01 · Räumliche Koordinaten",
 
   info:
-    "Dreidimensionale Koordinaten lesen, ergänzen und zuordnen.",
+    "Koordinaten in einem Würfel ablesen und ergänzen.",
 
   generators: [
-    genCoordinateRead,
-    genCoordinateHeight,
-    genCoordinateMissing,
-    genCoordinateChoosePoint
+    genK01ReadEasy,
+    genK01ReadHard,
+    genK01MissingCoordinate,
+    genK01Height
   ]
 };
