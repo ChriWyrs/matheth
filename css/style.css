@@ -1,93 +1,819 @@
+:root{
+  --bg:#f5f3ef;
+  --card:#ffffff;
+  --text:#1f2933;
+  --muted:#65717f;
+  --line:#e5ded3;
+  --soft:#faf8f4;
+  --accent:#315f72;
+  --accent-dark:#244a59;
+  --good:#20744a;
+  --bad:#9b2c2c;
+  --warn:#8a5a00;
+  --shadow:0 18px 45px rgba(31,41,51,.08);
+  --radius:22px;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at top left, rgba(49,95,114,.12), transparent 35rem),
+    var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.5;
+}
+
+.page{
+  width:min(1060px, calc(100% - 32px));
+  margin:0 auto;
+  padding:32px 0 56px;
+}
+
+.page-narrow{
+  width:min(920px, calc(100% - 32px));
+}
+
+.hero,
+.trainer-header{
+  margin-bottom:20px;
+}
+.hero h1,
+.trainer-header h1{
+  margin:.15rem 0 .35rem;
+  font-size:clamp(1.7rem, 3.8vw, 3rem);
+  font-weight:500;
+  letter-spacing:-.03em;
+  line-height:1.05;
+}
+
+
+.lead{
+  margin:0;
+  color:var(--muted);
+  font-size:1.1rem;
+}
+
+.eyebrow{
+  margin:0;
+  color:var(--accent);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-size:.76rem;
+}
+
+.card,
+.progress-card,
+.task,
+.result{
+  background:rgba(255,255,255,.86);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.card{
+  padding:24px;
+  margin-bottom:18px;
+}
+
+.card h2,
+.task h2{
+  margin:0 0 8px;
+  font-size:1.25rem;
+  font-weight:500;
+  letter-spacing:-.02em;
+  line-height:1.2;
+}
+
+.muted{
+  background:rgba(250,248,244,.9);
+}
+
+.section-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.link-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:18px;
+}
+
+.training-link{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:18px;
+  color:var(--text);
+  text-decoration:none;
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:18px;
+  font-weight:700;
+}
+
+.training-link span{
+  color:var(--accent);
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+
+.training-link.primary{
+  color:white;
+  background:var(--accent);
+  border-color:var(--accent);
+}
+
+.training-link.primary span{
+  color:rgba(255,255,255,.8);
+}
+
+.trainer-header{
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
+}
+
+.back-link{
+  color:var(--accent);
+  text-decoration:none;
+  font-weight:700;
+  padding-top:10px;
+  white-space:nowrap;
+}
+
+.intro-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+}
+
+.progress-card{
+  padding:16px 18px;
+  margin-bottom:20px;
+}
+
+.progress-label{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.progress-track{
+  height:12px;
+  background:#e9e2d7;
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  width:0%;
+  height:100%;
+  background:var(--accent);
+  border-radius:99px;
+  transition:width .25s ease;
+}
+
+.tasks{
+  display:grid;
+  gap:18px;
+}
+
+.task{
+  padding:22px;
+}
+
+.task-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+  margin-bottom:16px;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#edf3f5;
+  color:var(--accent-dark);
+  font-size:.78rem;
+  font-weight:700;
+}
+
+.goal{
+  margin:0;
+  color:var(--muted);
+}
+
+.prompt{
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  margin:14px 0;
+}
+
+.sequence-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:white;
+  margin:12px 0;
+}
+
+.sequence-table th,
+.sequence-table td{
+  text-align:center;
+  padding:12px 10px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  min-width:58px;
+}
+
+.sequence-table th:last-child,
+.sequence-table td:last-child{
+  border-right:0;
+}
+
+.sequence-table tr:last-child td{
+  border-bottom:0;
+}
+
+.sequence-table th{
+  background:#f1eee8;
+  font-weight:700;
+}
+
+.sequence-table .question{
+  color:var(--accent);
+  font-weight:700;
+  font-size:1.15rem;
+}
+
+.answer-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+input{
+  width:min(360px,100%);
+  font:inherit;
+  border:1px solid #cfc6b8;
+  border-radius:14px;
+  padding:12px 14px;
+  background:white;
+}
+
+button{
+  border:0;
+  border-radius:14px;
+  padding:12px 16px;
+  background:var(--accent);
+  color:white;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button:hover{
+  background:var(--accent-dark);
+}
+
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+button.secondary{
+  background:#edf3f5;
+  color:var(--accent-dark);
+}
+
+.feedback{
+  margin-top:12px;
+  padding:14px 16px;
+  border-radius:16px;
+  background:#f6f2eb;
+  color:var(--text);
+}
+
+.feedback.good{
+  background:#eaf6ef;
+  color:var(--good);
+}
+
+.feedback.bad{
+  background:#fff0f0;
+  color:var(--bad);
+}
+
+.feedback.hint{
+  background:#fff6df;
+  color:var(--warn);
+}
+
+.solution{
+  margin-top:10px;
+  color:var(--text);
+}
+
+.result{
+  margin-top:20px;
+  padding:24px;
+  text-align:center;
+}
+
+code{
+  display:inline-block;
+  max-width:100%;
+  overflow:auto;
+  background:#efe9de;
+  padding:8px 10px;
+  border-radius:10px;
+}
+
+.footer{
+  margin-top:28px;
+  color:var(--muted);
+  text-align:center;
+}
+
+/* G07 · dynamische Figurenfolgen */
+
+.figure-stage{
+  width:100%;
+  overflow-x:auto;
+  padding:12px 4px 4px;
+}
+
+.figure-row{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  min-width:max-content;
+}
+
+.figure-card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  min-width:136px;
+  text-align:center;
+}
+
+.figure-card strong{
+  display:block;
+  margin-bottom:8px;
+  color:var(--accent-dark);
+  font-weight:600;
+}
+
+.figure-card svg{
+  display:block;
+  margin:0 auto;
+  color:var(--accent);
+}
+
+.figure-note{
+  color:var(--muted);
+  font-size:.95rem;
+  margin-top:10px;
+}
+
+@media (max-width:720px){
+  .page{
+    width:min(100% - 22px, 1060px);
+    padding-top:18px;
+  }
+
+  .trainer-header,
+  .intro-card{
+    display:block;
+  }
+
+  .back-link{
+    display:inline-block;
+    margin-bottom:12px;
+  }
+
+  .link-grid{
+    grid-template-columns:1fr;
+  }
+
+  .task-top{
+    display:block;
+  }
+
+  .sequence-table{
+    font-size:.92rem;
+  }
+
+  .sequence-table th,
+  .sequence-table td{
+    padding:9px 6px;
+    min-width:44px;
+  }
+
+  .answer-row{
+    display:block;
+  }
+
+  input,
+  button{
+    width:100%;
+    margin-top:8px;
+  }
+
+  .figure-card{
+    min-width:116px;
+    padding:10px;
+  }
+}
+
+
+/* Versetzte Differenzfolgen */
+
+.diff-grid{
+  display:grid;
+  gap:6px;
+  align-items:center;
+  overflow-x:auto;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  margin:12px 0;
+}
+
+.diff-label{
+  font-weight:600;
+  color:var(--accent-dark);
+  white-space:nowrap;
+  padding:8px 10px;
+}
+
+.diff-cell{
+  text-align:center;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#faf8f4;
+  min-width:38px;
+}
+
+.diff-head{
+  background:#f1eee8;
+  font-weight:600;
+}
+
+.diff-soft{
+  background:#edf3f5;
+}
+
+.diff-question{
+  background:#fff6df;
+  font-weight:600;
+}
+
+.diff-box{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:22px;
+  margin:14px 0;
+  overflow-x:auto;
+}
+
+.diff-row{
+  display:grid;
+  grid-template-columns:220px repeat(5,110px);
+  gap:12px;
+  align-items:center;
+  margin:12px 0;
+}
+
+.diff-label{
+  font-weight:600;
+  color:var(--accent-dark);
+  white-space:nowrap;
+}
+
+.diff-value{
+  text-align:center;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:500;
+}
+
+.diff-main{
+  background:#faf8f4;
+}
+
+.diff-one{
+  background:#edf3f5;
+}
+
+.diff-two{
+  background:#fff6df;
+}
+
+.diff-offset-1{
+  padding-left:61px;
+}
+
+.diff-offset-2{
+  padding-left:122px;
+}
+
+.slope-svg-wrap{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:16px;
+  margin:14px 0;
+  overflow-x:auto;
+}
+
+.slope-svg{
+  width:100%;
+  max-width:620px;
+  display:block;
+  margin:0 auto;
+}
+
+.slope-fill{
+  fill:rgba(49,95,114,.08);
+}
+
+.slope-line-horizontal{
+  stroke:#315f72;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+
+.slope-line-vertical{
+  stroke:#20744a;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+
+.slope-line-hyp{
+  stroke:#1f2933;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+
+.slope-dot{
+  fill:#1f2933;
+}
+
+.slope-right-angle{
+  fill:none;
+  stroke:#1f2933;
+  stroke-width:3;
+}
+
+.slope-text-horizontal{
+  fill:#315f72;
+  font-size:24px;
+  font-weight:600;
+}
+
+.slope-text-vertical{
+  fill:#20744a;
+  font-size:24px;
+  font-weight:600;
+}
+
+.slope-label{
+  fill:#65717f;
+  font-size:16px;
+}
+
 /* =========================================
-   K01 · Koordinatenwürfel
+   K01 · 3D-Koordinaten
    ========================================= */
 
-.k01-wrap{
-  max-width: 760px;
+.coordinate-svg-wrap{
+  margin:16px 0;
+  padding:16px;
+  overflow-x:auto;
+  background:#ffffff;
+  border:1px solid var(--line);
+  border-radius:18px;
+}
+
+.coordinate-svg{
+  display:block;
+  width:100%;
+  min-width:560px;
+  max-width:760px;
+  margin:0 auto;
+}
+
+.coord-ground{
+  fill:rgba(49,95,114,.07);
+  stroke:#cdd8dc;
+  stroke-width:1.5;
+}
+
+.coord-grid-line{
+  stroke:#dbe3e6;
+  stroke-width:1.2;
+}
+
+.coord-axis{
+  stroke:#27343d;
+  stroke-width:3;
+  stroke-linecap:round;
+}
+
+.coord-height-mark{
+  stroke:#27343d;
+  stroke-width:2;
+}
+
+.coord-axis-number{
+  fill:#65717f;
+  font-size:14px;
+  font-weight:500;
+}
+
+.coord-axis-label{
+  fill:#315f72;
+  font-size:18px;
+  font-weight:700;
+}
+
+.coord-guide{
+  fill:none;
+  stroke:#8297a0;
+  stroke-width:2;
+  stroke-dasharray:7 7;
+}
+
+.coord-guide-height{
+  stroke:#20744a;
+  stroke-width:3;
+}
+
+.coord-point{
+  fill:#ffffff;
+  stroke:#315f72;
+  stroke-width:4;
+}
+
+.coord-point-ring{
+  fill:none;
+  stroke:rgba(49,95,114,.22);
+  stroke-width:4;
+}
+
+.coord-point-label{
+  fill:#244a59;
+  font-size:22px;
+  font-weight:700;
+}
+
+.coordinate-note{
+  margin:8px 0 0;
+  color:var(--muted);
+  text-align:center;
+  font-size:.95rem;
+}
+
+.coordinate-svg-wrap{
+  max-width: 720px;
   margin: 18px auto;
 }
 
-.k01-svg{
+.coordinate-svg{
   display: block;
   width: 100%;
   height: auto;
+  overflow: visible;
 }
 
-.k01-grid{
-  stroke: #b8c4cd;
-  stroke-width: 1.15;
-  opacity: 0.68;
+.coord-ground{
+  fill: #eef5e8;
+  stroke: #718266;
+  stroke-width: 2;
 }
 
-.k01-edge{
-  stroke: #667784;
-  stroke-width: 2.1;
+.coord-grid-line{
+  stroke: #b7c5ae;
+  stroke-width: 1.2;
 }
 
-.k01-axis{
-  stroke: #21333d;
-  stroke-width: 3.5;
-  marker-end: url(#k01-arrow);
+.coord-axis{
+  stroke: #263238;
+  stroke-width: 3;
+  marker-end: url(#coord-arrow);
 }
 
-.k01-arrow-head{
-  fill: #21333d;
+.coord-arrow-head{
+  fill: #263238;
 }
 
-.k01-number{
-  fill: #526373;
-  font-size: 17px;
-  font-weight: 650;
+.coord-axis-number{
+  fill: #455a64;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.k01-axis-label{
-  fill: #173e51;
-  font-size: 25px;
-  font-weight: 900;
+.coord-axis-label{
+  fill: #17252a;
+  font-size: 19px;
+  font-weight: 800;
 }
 
-.k01-guide{
-  stroke: #e63946;
+.coord-origin-label{
+  fill: #455a64;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.coord-height-mark{
+  stroke: #263238;
+  stroke-width: 2;
+}
+
+.coord-guide{
+  stroke: #506d7a;
+  stroke-width: 1.8;
+  stroke-dasharray: 7 6;
+}
+
+.coord-guide-height{
   stroke-width: 2.2;
-  stroke-dasharray: 8 7;
 }
 
-.k01-point{
+.coord-ground-point{
+  fill: #506d7a;
+}
+
+.coord-point{
   fill: #e63946;
   stroke: white;
   stroke-width: 2;
 }
 
-.k01-point-ring{
+.coord-point-ring{
   fill: none;
   stroke: #e63946;
-  stroke-width: 3;
-  opacity: 0.3;
+  stroke-width: 2;
+  opacity: 0.45;
 }
 
-.k01-point-label{
-  fill: #b21e2b;
-  font-size: 25px;
+.coord-point-label{
+  fill: #a4161a;
+  font-size: 23px;
   font-weight: 900;
   paint-order: stroke;
   stroke: white;
-  stroke-width: 5px;
+  stroke-width: 4px;
 }
 
-.k01-note{
-  margin: 8px 0 0;
+.coord-mountains{
+  fill: #dce8d5;
+  stroke: #9caf91;
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+
+.coordinate-note{
+  margin: 6px 0 0;
   text-align: center;
-  color: #607080;
+  color: #52606d;
   font-size: 0.95rem;
 }
 
-.k01-given{
-  max-width: 300px;
-  margin: 15px auto;
-  padding: 12px 18px;
-  border: 2px solid #cbd5df;
-  border-radius: 12px;
-  background: #f5f8fa;
+.coordinate-given{
+  margin: 14px 0;
+  padding: 12px 16px;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
+  background: #f8fafc;
 }
