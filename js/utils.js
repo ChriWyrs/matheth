@@ -89,6 +89,24 @@ function parseQuadraticTerm(input){
 }
 
 function ok(value,answer){
+
+  if(typeof answer==="object" && answer.kind==="coordinates"){
+  const numbers=String(value)
+    .replace(/[()]/g,"")
+    .replace(/,/g,"/")
+    .replace(/;/g,"/")
+    .split("/")
+    .map(part=>Number(part.trim()));
+
+  return (
+    numbers.length===3 &&
+    numbers.every(number=>Number.isFinite(number)) &&
+    numbers[0]===answer.values[0] &&
+    numbers[1]===answer.values[1] &&
+    numbers[2]===answer.values[2]
+  );
+}
+  
   if(typeof answer==="object" && answer.kind==="number"){
     const num=parseNumber(value);
     return num!==null && Math.abs(num-answer.value)<0.0001;
