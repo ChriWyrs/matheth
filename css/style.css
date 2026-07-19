@@ -609,3 +609,95 @@ code{
   fill:#65717f;
   font-size:16px;
 }
+
+/* =========================================
+   K01 · 3D-Koordinaten
+   ========================================= */
+
+.coordinate-svg-wrap{
+  margin:16px 0;
+  padding:16px;
+  overflow-x:auto;
+  background:#ffffff;
+  border:1px solid var(--line);
+  border-radius:18px;
+}
+
+.coordinate-svg{
+  display:block;
+  width:100%;
+  min-width:560px;
+  max-width:760px;
+  margin:0 auto;
+}
+
+.coord-ground{
+  fill:rgba(49,95,114,.07);
+  stroke:#cdd8dc;
+  stroke-width:1.5;
+}
+
+.coord-grid-line{
+  stroke:#dbe3e6;
+  stroke-width:1.2;
+}
+
+.coord-axis{
+  stroke:#27343d;
+  stroke-width:3;
+  stroke-linecap:round;
+}
+
+.coord-height-mark{
+  stroke:#27343d;
+  stroke-width:2;
+}
+
+.coord-axis-number{
+  fill:#65717f;
+  font-size:14px;
+  font-weight:500;
+}
+
+.coord-axis-label{
+  fill:#315f72;
+  font-size:18px;
+  font-weight:700;
+}
+
+.coord-guide{
+  fill:none;
+  stroke:#8297a0;
+  stroke-width:2;
+  stroke-dasharray:7 7;
+}
+
+.coord-guide-height{
+  stroke:#20744a;
+  stroke-width:3;
+}
+
+.coord-point{
+  fill:#ffffff;
+  stroke:#315f72;
+  stroke-width:4;
+}
+
+.coord-point-ring{
+  fill:none;
+  stroke:rgba(49,95,114,.22);
+  stroke-width:4;
+}
+
+.coord-point-label{
+  fill:#244a59;
+  font-size:22px;
+  font-weight:700;
+}
+
+.coordinate-note{
+  margin:8px 0 0;
+  color:var(--muted);
+  text-align:center;
+  font-size:.95rem;
+}
