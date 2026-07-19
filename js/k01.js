@@ -1,9 +1,12 @@
-
-
 /* =========================================
    K01 · 3D-Koordinaten im Gelände
    Thema 2 · Stuckli – Nüsell – Wildspitz
    ========================================= */
+
+
+/* -----------------------------------------
+   Antworten
+   ----------------------------------------- */
 
 function coordinateAnswer(x, y, z){
   return {
@@ -12,49 +15,150 @@ function coordinateAnswer(x, y, z){
   };
 }
 
+
+/* -----------------------------------------
+   Projektion
+   ----------------------------------------- */
+
 function project3D(x, y, z){
-  const originX = 300;
-  const originY = 300;
+  const originX = 305;
+  const originY = 330;
 
   return {
-    x: originX + x * 4.2 - y * 2.8,
-    y: originY - y * 1.55 - z * 0.48
+    x: originX + x * 4.4 - y * 2.9,
+    y: originY - y * 1.55 - z * 0.5
   };
 }
 
-function terrainCoordinateSvg(point){
+
+/* -----------------------------------------
+   Zufälliger Koordinatenpunkt
+   ----------------------------------------- */
+
+function createCoordinateCase(){
+  const horizontalValues = [10, 20, 30, 40, 50];
+  const heightValues = [50, 100, 150, 200, 250, 300];
+
+  return {
+    x: pick(horizontalValues),
+    y: pick(horizontalValues),
+    z: pick(heightValues)
+  };
+}
+
+
+/* -----------------------------------------
+   Mehrere verschiedene Punkte erzeugen
+   ----------------------------------------- */
+
+function createCoordinatePoints(count = 4){
+  const labels = ["A", "B", "C", "D"];
+  const points = [];
+  const used = new Set();
+
+  while(points.length < count){
+    const point = createCoordinateCase();
+    const key = `${point.x}-${point.y}-${point.z}`;
+
+    if(!used.has(key)){
+      used.add(key);
+
+      points.push({
+        ...point,
+        label: labels[points.length]
+      });
+    }
+  }
+
+  return points;
+}
+
+
+/* -----------------------------------------
+   SVG-Hilfsfunktionen
+   ----------------------------------------- */
+
+function svgLine(a, b, className){
+  return `
+    <line
+      x1="${a.x}"
+      y1="${a.y}"
+      x2="${b.x}"
+      y2="${b.y}"
+      class="${className}">
+    </line>
+  `;
+}
+
+function mountainDecoration(){
+  return `
+    <g class="coord-mountains" aria-hidden="true">
+
+      <path
+        d="M84 286
+           L130 225
+           L155 254
+           L194 199
+           L243 283
+           Z">
+      </path>
+
+      <path
+        d="M390 285
+           L433 224
+           L458 254
+           L487 213
+           L548 286
+           Z">
+      </path>
+
+      <path
+        d="M174 283
+           L212 241
+           L245 265
+           L278 219
+           L327 284
+           Z">
+      </path>
+
+    </g>
+  `;
+}
+
+
+/* -----------------------------------------
+   Einzelner Punkt
+   ----------------------------------------- */
+
+function terrainCoordinateSvg(point, options = {}){
+  const label = options.label || point.label || "A";
+  const showGuides = options.showGuides !== false;
+  const showNote = options.showNote !== false;
+
   const xValues = [0, 10, 20, 30, 40, 50];
   const yValues = [0, 10, 20, 30, 40, 50];
+  const zValues = [50, 100, 150, 200, 250, 300];
 
+  const origin = project3D(0, 0, 0);
   const point3D = project3D(point.x, point.y, point.z);
   const groundPoint = project3D(point.x, point.y, 0);
   const xProjection = project3D(point.x, 0, 0);
   const yProjection = project3D(0, point.y, 0);
 
   const xGrid = xValues.map(x => {
-    const start = project3D(x, 0, 0);
-    const end = project3D(x, 50, 0);
-
-    return `
-      <line
-        x1="${start.x}" y1="${start.y}"
-        x2="${end.x}" y2="${end.y}"
-        class="coord-grid-line">
-      </line>
-    `;
+    return svgLine(
+      project3D(x, 0, 0),
+      project3D(x, 50, 0),
+      "coord-grid-line"
+    );
   }).join("");
 
   const yGrid = yValues.map(y => {
-    const start = project3D(0, y, 0);
-    const end = project3D(50, y, 0);
-
-    return `
-      <line
-        x1="${start.x}" y1="${start.y}"
-        x2="${end.x}" y2="${end.y}"
-        class="coord-grid-line">
-      </line>
-    `;
+    return svgLine(
+      project3D(0, y, 0),
+      project3D(50, y, 0),
+      "coord-grid-line"
+    );
   }).join("");
 
   const xLabels = xValues.slice(1).map(x => {
@@ -63,7 +167,7 @@ function terrainCoordinateSvg(point){
     return `
       <text
         x="${p.x}"
-        y="${p.y + 24}"
+        y="${p.y + 25}"
         text-anchor="middle"
         class="coord-axis-number">
         ${x}
@@ -85,18 +189,20 @@ function terrainCoordinateSvg(point){
     `;
   }).join("");
 
-  const heightLines = [50, 100, 150, 200, 250, 300].map(z => {
+  const heightMarks = zValues.map(z => {
     const p = project3D(0, 0, z);
 
     return `
       <line
-        x1="${p.x - 6}" y1="${p.y}"
-        x2="${p.x + 6}" y2="${p.y}"
+        x1="${p.x - 7}"
+        y1="${p.y}"
+        x2="${p.x + 7}"
+        y2="${p.y}"
         class="coord-height-mark">
       </line>
 
       <text
-        x="${p.x - 12}"
+        x="${p.x - 13}"
         y="${p.y + 5}"
         text-anchor="end"
         class="coord-axis-number">
@@ -105,14 +211,48 @@ function terrainCoordinateSvg(point){
     `;
   }).join("");
 
+  const guides = showGuides
+    ? `
+      ${svgLine(point3D, groundPoint, "coord-guide coord-guide-height")}
+      ${svgLine(groundPoint, xProjection, "coord-guide")}
+      ${svgLine(groundPoint, yProjection, "coord-guide")}
+
+      <circle
+        cx="${groundPoint.x}"
+        cy="${groundPoint.y}"
+        r="4"
+        class="coord-ground-point">
+      </circle>
+    `
+    : "";
+
   return `
     <div class="coordinate-svg-wrap">
 
       <svg
         class="coordinate-svg"
-        viewBox="0 0 620 390"
+        viewBox="0 0 620 410"
         role="img"
-        aria-label="Dreidimensionales Koordinatensystem mit Punkt A">
+        aria-label="Dreidimensionales Koordinatensystem mit Punkt ${label}">
+
+        <defs>
+          <marker
+            id="coord-arrow"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse">
+
+            <path
+              d="M 0 0 L 10 5 L 0 10 z"
+              class="coord-arrow-head">
+            </path>
+          </marker>
+        </defs>
+
+        ${mountainDecoration()}
 
         <polygon
           points="
@@ -127,90 +267,57 @@ function terrainCoordinateSvg(point){
         ${xGrid}
         ${yGrid}
 
-        <!-- x-Achse -->
-        <line
-          x1="${project3D(0,0,0).x}"
-          y1="${project3D(0,0,0).y}"
-          x2="${project3D(55,0,0).x}"
-          y2="${project3D(55,0,0).y}"
-          class="coord-axis">
-        </line>
+        ${svgLine(
+          origin,
+          project3D(56, 0, 0),
+          "coord-axis coord-axis-arrow"
+        )}
 
-        <!-- y-Achse -->
-        <line
-          x1="${project3D(0,0,0).x}"
-          y1="${project3D(0,0,0).y}"
-          x2="${project3D(0,55,0).x}"
-          y2="${project3D(0,55,0).y}"
-          class="coord-axis">
-        </line>
+        ${svgLine(
+          origin,
+          project3D(0, 56, 0),
+          "coord-axis coord-axis-arrow"
+        )}
 
-        <!-- Höhenachse -->
-        <line
-          x1="${project3D(0,0,0).x}"
-          y1="${project3D(0,0,0).y}"
-          x2="${project3D(0,0,330).x}"
-          y2="${project3D(0,0,330).y}"
-          class="coord-axis">
-        </line>
+        ${svgLine(
+          origin,
+          project3D(0, 0, 335),
+          "coord-axis coord-axis-arrow"
+        )}
 
         ${xLabels}
         ${yLabels}
-        ${heightLines}
+        ${heightMarks}
 
         <text
-          x="${project3D(56,0,0).x}"
-          y="${project3D(56,0,0).y + 18}"
+          x="${project3D(57,0,0).x + 4}"
+          y="${project3D(57,0,0).y + 20}"
           class="coord-axis-label">
           x
         </text>
 
         <text
-          x="${project3D(0,56,0).x - 10}"
-          y="${project3D(0,56,0).y}"
+          x="${project3D(0,57,0).x - 12}"
+          y="${project3D(0,57,0).y - 2}"
           class="coord-axis-label">
           y
         </text>
 
         <text
-          x="${project3D(0,0,335).x + 10}"
-          y="${project3D(0,0,335).y}"
+          x="${project3D(0,0,337).x + 12}"
+          y="${project3D(0,0,337).y + 4}"
           class="coord-axis-label">
           Höhe
         </text>
 
-        <!-- Hilfslinien -->
-        <line
-          x1="${point3D.x}"
-          y1="${point3D.y}"
-          x2="${groundPoint.x}"
-          y2="${groundPoint.y}"
-          class="coord-guide coord-guide-height">
-        </line>
+        <text
+          x="${origin.x + 11}"
+          y="${origin.y + 19}"
+          class="coord-origin-label">
+          0
+        </text>
 
-        <line
-          x1="${groundPoint.x}"
-          y1="${groundPoint.y}"
-          x2="${xProjection.x}"
-          y2="${xProjection.y}"
-          class="coord-guide">
-        </line>
-
-        <line
-          x1="${groundPoint.x}"
-          y1="${groundPoint.y}"
-          x2="${yProjection.x}"
-          y2="${yProjection.y}"
-          class="coord-guide">
-        </line>
-
-        <!-- Punkt A -->
-        <circle
-          cx="${point3D.x}"
-          cy="${point3D.y}"
-          r="9"
-          class="coord-point">
-        </circle>
+        ${guides}
 
         <circle
           cx="${point3D.x}"
@@ -219,95 +326,326 @@ function terrainCoordinateSvg(point){
           class="coord-point-ring">
         </circle>
 
+        <circle
+          cx="${point3D.x}"
+          cy="${point3D.y}"
+          r="8"
+          class="coord-point">
+        </circle>
+
         <text
-          x="${point3D.x + 17}"
-          y="${point3D.y - 12}"
+          x="${point3D.x + 18}"
+          y="${point3D.y - 13}"
           class="coord-point-label">
-          A
+          ${label}
+        </text>
+
+      </svg>
+
+      ${
+        showNote
+          ? `
+            <p class="coordinate-note">
+              Lies zuerst x und y auf der Grundfläche und danach die Höhe ab.
+            </p>
+          `
+          : ""
+      }
+
+    </div>
+  `;
+}
+
+
+/* -----------------------------------------
+   Darstellung mit vier Punkten
+   ----------------------------------------- */
+
+function terrainMultiplePointsSvg(points){
+  const xValues = [0, 10, 20, 30, 40, 50];
+  const yValues = [0, 10, 20, 30, 40, 50];
+  const zValues = [50, 100, 150, 200, 250, 300];
+
+  const origin = project3D(0, 0, 0);
+
+  const xGrid = xValues.map(x => {
+    return svgLine(
+      project3D(x, 0, 0),
+      project3D(x, 50, 0),
+      "coord-grid-line"
+    );
+  }).join("");
+
+  const yGrid = yValues.map(y => {
+    return svgLine(
+      project3D(0, y, 0),
+      project3D(50, y, 0),
+      "coord-grid-line"
+    );
+  }).join("");
+
+  const xLabels = xValues.slice(1).map(x => {
+    const p = project3D(x, 0, 0);
+
+    return `
+      <text
+        x="${p.x}"
+        y="${p.y + 25}"
+        text-anchor="middle"
+        class="coord-axis-number">
+        ${x}
+      </text>
+    `;
+  }).join("");
+
+  const yLabels = yValues.slice(1).map(y => {
+    const p = project3D(0, y, 0);
+
+    return `
+      <text
+        x="${p.x - 15}"
+        y="${p.y + 5}"
+        text-anchor="end"
+        class="coord-axis-number">
+        ${y}
+      </text>
+    `;
+  }).join("");
+
+  const heightMarks = zValues.map(z => {
+    const p = project3D(0, 0, z);
+
+    return `
+      <line
+        x1="${p.x - 7}"
+        y1="${p.y}"
+        x2="${p.x + 7}"
+        y2="${p.y}"
+        class="coord-height-mark">
+      </line>
+
+      <text
+        x="${p.x - 13}"
+        y="${p.y + 5}"
+        text-anchor="end"
+        class="coord-axis-number">
+        ${z}
+      </text>
+    `;
+  }).join("");
+
+  const pointElements = points.map(point => {
+    const p = project3D(point.x, point.y, point.z);
+    const ground = project3D(point.x, point.y, 0);
+
+    return `
+      ${svgLine(p, ground, "coord-guide coord-guide-height")}
+
+      <circle
+        cx="${p.x}"
+        cy="${p.y}"
+        r="13"
+        class="coord-point-ring">
+      </circle>
+
+      <circle
+        cx="${p.x}"
+        cy="${p.y}"
+        r="7"
+        class="coord-point">
+      </circle>
+
+      <text
+        x="${p.x + 15}"
+        y="${p.y - 11}"
+        class="coord-point-label">
+        ${point.label}
+      </text>
+    `;
+  }).join("");
+
+  return `
+    <div class="coordinate-svg-wrap">
+
+      <svg
+        class="coordinate-svg"
+        viewBox="0 0 620 410"
+        role="img"
+        aria-label="Dreidimensionales Koordinatensystem mit vier Punkten">
+
+        <defs>
+          <marker
+            id="coord-arrow-multiple"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto-start-reverse">
+
+            <path
+              d="M 0 0 L 10 5 L 0 10 z"
+              class="coord-arrow-head">
+            </path>
+          </marker>
+        </defs>
+
+        ${mountainDecoration()}
+
+        <polygon
+          points="
+            ${project3D(0,0,0).x},${project3D(0,0,0).y}
+            ${project3D(50,0,0).x},${project3D(50,0,0).y}
+            ${project3D(50,50,0).x},${project3D(50,50,0).y}
+            ${project3D(0,50,0).x},${project3D(0,50,0).y}
+          "
+          class="coord-ground">
+        </polygon>
+
+        ${xGrid}
+        ${yGrid}
+
+        <line
+          x1="${origin.x}"
+          y1="${origin.y}"
+          x2="${project3D(56,0,0).x}"
+          y2="${project3D(56,0,0).y}"
+          class="coord-axis"
+          marker-end="url(#coord-arrow-multiple)">
+        </line>
+
+        <line
+          x1="${origin.x}"
+          y1="${origin.y}"
+          x2="${project3D(0,56,0).x}"
+          y2="${project3D(0,56,0).y}"
+          class="coord-axis"
+          marker-end="url(#coord-arrow-multiple)">
+        </line>
+
+        <line
+          x1="${origin.x}"
+          y1="${origin.y}"
+          x2="${project3D(0,0,335).x}"
+          y2="${project3D(0,0,335).y}"
+          class="coord-axis"
+          marker-end="url(#coord-arrow-multiple)">
+        </line>
+
+        ${xLabels}
+        ${yLabels}
+        ${heightMarks}
+        ${pointElements}
+
+        <text
+          x="${project3D(57,0,0).x + 4}"
+          y="${project3D(57,0,0).y + 20}"
+          class="coord-axis-label">
+          x
+        </text>
+
+        <text
+          x="${project3D(0,57,0).x - 12}"
+          y="${project3D(0,57,0).y - 2}"
+          class="coord-axis-label">
+          y
+        </text>
+
+        <text
+          x="${project3D(0,0,337).x + 12}"
+          y="${project3D(0,0,337).y + 4}"
+          class="coord-axis-label">
+          Höhe
         </text>
 
       </svg>
 
       <p class="coordinate-note">
-        Lies zuerst die x- und y-Koordinate am Boden und danach die Höhe ab.
+        Vergleiche alle drei Koordinaten sorgfältig.
       </p>
 
     </div>
   `;
 }
 
-function createCoordinateCase(){
-  const horizontalValues = [10, 20, 30, 40, 50];
-  const heightValues = [50, 100, 150, 200, 250, 300];
 
-  return {
-    x: pick(horizontalValues),
-    y: pick(horizontalValues),
-    z: pick(heightValues)
-  };
-}
+/* =========================================
+   GENERATOREN
+   ========================================= */
+
+
+/* -----------------------------------------
+   1. Alle Koordinaten ablesen
+   ----------------------------------------- */
 
 function genCoordinateRead(){
   const point = createCoordinateCase();
+  const label = pick(["A", "B", "C", "D"]);
 
   return {
-    badge: "K01 · 3D-Koordinaten",
+    badge: "K01 · Koordinaten ablesen",
 
     ziel:
       "Die drei Koordinaten eines Punktes in einer räumlichen Darstellung ablesen.",
 
     text: `
       <p>
-        Im Gelände ist der weisse Punkt <strong>A</strong> markiert.
+        Im Gelände ist der Punkt <strong>${label}</strong> markiert.
       </p>
 
-      ${terrainCoordinateSvg(point)}
+      ${terrainCoordinateSvg(point, { label })}
     `,
 
     ask:
-      "Bestimme die Koordinaten von A. Schreibe zum Beispiel: 20 / 30 / 150",
+      `Bestimme die Koordinaten von ${label}. Schreibe zum Beispiel: 20 / 30 / 150`,
 
     answer:
       coordinateAnswer(point.x, point.y, point.z),
 
     hint1:
-      "Die ersten beiden Koordinaten liest du auf der Grundfläche ab.",
+      "Die erste und die zweite Koordinate liest du auf der Grundfläche ab.",
 
     hint2:
-      "Verfolge die gestrichelten Hilfslinien von A bis zur x- und y-Achse.",
+      "Verfolge die gestrichelten Linien bis zu den x- und y-Achsen.",
 
     hint3:
-      `Die Höhe des Punktes beträgt ${point.z} m.`,
+      `Die dritte Koordinate ist die Höhe ${point.z} m.`,
 
     solution: `
       Der Punkt liegt bei
 
       <strong>
-        A (${point.x} / ${point.y} / ${point.z})
+        ${label} (${point.x} / ${point.y} / ${point.z})
       </strong>.
     `
   };
 }
 
+
+/* -----------------------------------------
+   2. Höhe ablesen
+   ----------------------------------------- */
+
 function genCoordinateHeight(){
   const point = createCoordinateCase();
+  const label = pick(["A", "B", "C", "D"]);
 
   return {
     badge: "K01 · Höhe ablesen",
 
     ziel:
-      "Die Höhenkoordinate eines Punktes in einer räumlichen Darstellung ablesen.",
+      "Die Höhenkoordinate eines Punktes ablesen.",
 
     text: `
       <p>
-        Der Punkt <strong>A</strong> liegt im dargestellten Gelände.
+        Der Punkt <strong>${label}</strong> liegt im dargestellten Gelände.
       </p>
 
-      ${terrainCoordinateSvg(point)}
+      ${terrainCoordinateSvg(point, { label })}
     `,
 
     ask:
-      "Wie gross ist die Höhenkoordinate von A?",
+      `Wie gross ist die Höhenkoordinate von ${label}?`,
 
     answer:
       numberAnswer(point.z),
@@ -316,27 +654,150 @@ function genCoordinateHeight(){
       "Die Höhenkoordinate ist die dritte Koordinate.",
 
     hint2:
-      "Verfolge die senkrechte Hilfslinie vom Boden bis zum Punkt A.",
+      "Verfolge die senkrechte gestrichelte Linie.",
 
     hint3:
-      "Vergleiche die Höhe mit der senkrechten Skala links.",
+      "Vergleiche den Punkt mit der Höhenskala links.",
 
     solution: `
-      Die Höhenkoordinate beträgt
+      Die Höhenkoordinate von ${label} beträgt
 
       <strong>${point.z} m</strong>.
     `
   };
 }
 
+
+/* -----------------------------------------
+   3. Fehlende x- oder y-Koordinate
+   ----------------------------------------- */
+
+function genCoordinateMissing(){
+  const point = createCoordinateCase();
+  const label = pick(["A", "B", "C", "D"]);
+  const missing = pick(["x", "y"]);
+
+  const shownCoordinates =
+    missing === "x"
+      ? `( ? / ${point.y} / ${point.z} )`
+      : `( ${point.x} / ? / ${point.z} )`;
+
+  const correctValue =
+    missing === "x"
+      ? point.x
+      : point.y;
+
+  return {
+    badge: "K01 · Fehlende Koordinate",
+
+    ziel:
+      "Eine fehlende Koordinate aus der räumlichen Darstellung bestimmen.",
+
+    text: `
+      <p>
+        Vom Punkt <strong>${label}</strong> sind zwei Koordinaten bekannt:
+      </p>
+
+      <p class="coordinate-given">
+        <strong>${label} ${shownCoordinates}</strong>
+      </p>
+
+      ${terrainCoordinateSvg(point, { label })}
+    `,
+
+    ask:
+      `Welche Zahl fehlt an der Stelle der ${missing}-Koordinate?`,
+
+    answer:
+      numberAnswer(correctValue),
+
+    hint1:
+      `Gesucht ist die ${missing}-Koordinate.`,
+
+    hint2:
+      "Verfolge die passende Hilfslinie auf der Grundfläche.",
+
+    hint3:
+      `Die gesuchte Koordinate beträgt ${correctValue}.`,
+
+    solution: `
+      Der Punkt lautet vollständig:
+
+      <strong>
+        ${label} (${point.x} / ${point.y} / ${point.z})
+      </strong>.
+    `
+  };
+}
+
+
+/* -----------------------------------------
+   4. Richtigen Punkt auswählen
+   ----------------------------------------- */
+
+function genCoordinateChoosePoint(){
+  const points = createCoordinatePoints(4);
+  const target = pick(points);
+
+  return {
+    badge: "K01 · Punkt erkennen",
+
+    ziel:
+      "Einen Punkt anhand seiner drei Koordinaten erkennen.",
+
+    text: `
+      <p>
+        Vier Punkte sind im Gelände eingezeichnet.
+      </p>
+
+      <p class="coordinate-given">
+        Gesucht ist der Punkt bei
+        <strong>
+          (${target.x} / ${target.y} / ${target.z})
+        </strong>.
+      </p>
+
+      ${terrainMultiplePointsSvg(points)}
+    `,
+
+    ask:
+      "Welcher Punkt besitzt diese Koordinaten? Gib A, B, C oder D ein.",
+
+    answer:
+      target.label,
+
+    hint1:
+      "Vergleiche zuerst die x-Koordinaten.",
+
+    hint2:
+      "Vergleiche danach die y-Koordinaten auf der Grundfläche.",
+
+    hint3:
+      `Der gesuchte Punkt liegt auf einer Höhe von ${target.z} m.`,
+
+    solution: `
+      Die Koordinaten gehören zum Punkt
+
+      <strong>${target.label}</strong>.
+    `
+  };
+}
+
+
+/* =========================================
+   TRAINER
+   ========================================= */
+
 TRAINERS["koordinaten"] = {
   title: "K01 · Koordinaten im Gelände",
 
   info:
-    "Dreidimensionale Koordinaten und Höhenangaben ablesen.",
+    "Dreidimensionale Koordinaten lesen, ergänzen und zuordnen.",
 
   generators: [
     genCoordinateRead,
-    genCoordinateHeight
+    genCoordinateHeight,
+    genCoordinateMissing,
+    genCoordinateChoosePoint
   ]
 };
