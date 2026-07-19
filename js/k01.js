@@ -1,6 +1,6 @@
 /* =========================================
    K01 · Räumliche Koordinaten
-   Robuste Version ohne externe CSS-Regeln
+   Einfache, robuste Würfel-Version
    ========================================= */
 
 function coordinateAnswer(x, y, z){
@@ -14,7 +14,7 @@ const K01_MAX = 5;
 
 
 /* -----------------------------------------
-   Räumliche Projektion
+   Projektion
    ----------------------------------------- */
 
 function k01Project(x, y, z){
@@ -46,7 +46,7 @@ function k01SvgLine(a, b, style){
 
 
 /* -----------------------------------------
-   12 Außenkanten des Würfels
+   Außenkanten
    ----------------------------------------- */
 
 function k01CubeEdges(){
@@ -62,72 +62,106 @@ function k01CubeEdges(){
   const p555 = k01Project(n, n, n);
   const p055 = k01Project(0, n, n);
 
-  const edge =
+  const edgeStyle =
     "stroke:#546875;stroke-width:2.4;fill:none;";
 
   return `
-    ${k01SvgLine(p000, p500, edge)}
-    ${k01SvgLine(p500, p550, edge)}
-    ${k01SvgLine(p550, p050, edge)}
-    ${k01SvgLine(p050, p000, edge)}
+    ${k01SvgLine(p000, p500, edgeStyle)}
+    ${k01SvgLine(p500, p550, edgeStyle)}
+    ${k01SvgLine(p550, p050, edgeStyle)}
+    ${k01SvgLine(p050, p000, edgeStyle)}
 
-    ${k01SvgLine(p005, p505, edge)}
-    ${k01SvgLine(p505, p555, edge)}
-    ${k01SvgLine(p555, p055, edge)}
-    ${k01SvgLine(p055, p005, edge)}
+    ${k01SvgLine(p005, p505, edgeStyle)}
+    ${k01SvgLine(p505, p555, edgeStyle)}
+    ${k01SvgLine(p555, p055, edgeStyle)}
+    ${k01SvgLine(p055, p005, edgeStyle)}
 
-    ${k01SvgLine(p000, p005, edge)}
-    ${k01SvgLine(p500, p505, edge)}
-    ${k01SvgLine(p550, p555, edge)}
-    ${k01SvgLine(p050, p055, edge)}
+    ${k01SvgLine(p000, p005, edgeStyle)}
+    ${k01SvgLine(p500, p505, edgeStyle)}
+    ${k01SvgLine(p550, p555, edgeStyle)}
+    ${k01SvgLine(p050, p055, edgeStyle)}
   `;
 }
 
 
 /* -----------------------------------------
-   Vollständiges Röntgengitter
+   Ruhiges Gitter
+   Nur drei Flächen
    ----------------------------------------- */
 
 function k01FullGrid(){
   const lines = [];
 
   const gridStyle =
-    "stroke:#b9c6ce;stroke-width:1.1;opacity:0.72;fill:none;";
+    "stroke:#c8d2d8;stroke-width:1.15;opacity:0.82;fill:none;";
+
+  /*
+    Grundfläche z = 0
+  */
+  for(let x = 0; x <= K01_MAX; x++){
+    lines.push(
+      k01SvgLine(
+        k01Project(x, 0, 0),
+        k01Project(x, K01_MAX, 0),
+        gridStyle
+      )
+    );
+  }
 
   for(let y = 0; y <= K01_MAX; y++){
-    for(let z = 0; z <= K01_MAX; z++){
-      lines.push(
-        k01SvgLine(
-          k01Project(0, y, z),
-          k01Project(K01_MAX, y, z),
-          gridStyle
-        )
-      );
-    }
+    lines.push(
+      k01SvgLine(
+        k01Project(0, y, 0),
+        k01Project(K01_MAX, y, 0),
+        gridStyle
+      )
+    );
   }
 
+  /*
+    Vorderfläche y = 0
+  */
   for(let x = 0; x <= K01_MAX; x++){
-    for(let z = 0; z <= K01_MAX; z++){
-      lines.push(
-        k01SvgLine(
-          k01Project(x, 0, z),
-          k01Project(x, K01_MAX, z),
-          gridStyle
-        )
-      );
-    }
+    lines.push(
+      k01SvgLine(
+        k01Project(x, 0, 0),
+        k01Project(x, 0, K01_MAX),
+        gridStyle
+      )
+    );
   }
 
-  for(let x = 0; x <= K01_MAX; x++){
-    for(let y = 0; y <= K01_MAX; y++){
-      lines.push(
-        k01SvgLine(
-          k01Project(x, y, 0),
-          k01Project(x, y, K01_MAX),
-          gridStyle
-        )
-      );
-    }
+  for(let z = 0; z <= K01_MAX; z++){
+    lines.push(
+      k01SvgLine(
+        k01Project(0, 0, z),
+        k01Project(K01_MAX, 0, z),
+        gridStyle
+      )
+    );
+  }
+
+  /*
+    Linke Seitenfläche x = 0
+  */
+  for(let y = 0; y <= K01_MAX; y++){
+    lines.push(
+      k01SvgLine(
+        k01Project(0, y, 0),
+        k01Project(0, y, K01_MAX),
+        gridStyle
+      )
+    );
+  }
+
+  for(let z = 0; z <= K01_MAX; z++){
+    lines.push(
+      k01SvgLine(
+        k01Project(0, 0, z),
+        k01Project(0, K01_MAX, z),
+        gridStyle
+      )
+    );
   }
 
   return lines.join("");
@@ -241,40 +275,55 @@ function k01Axes(){
    Punkt und Hilfslinien
    ----------------------------------------- */
 
-function k01PointDrawing(point, label){
+function k01PointDrawing(point, label, showGuides = true){
   const p = k01Project(point.x, point.y, point.z);
 
   const ground = k01Project(point.x, point.y, 0);
-  const xBase = k01Project(point.x, 0, 0);
-  const yBase = k01Project(0, point.y, 0);
+  const xProjection = k01Project(point.x, 0, 0);
+  const yProjection = k01Project(0, point.y, 0);
 
   const guideStyle =
-    "stroke:#e63946;stroke-width:2.7;stroke-dasharray:8 7;fill:none;";
+    "stroke:#e63946;stroke-width:2.6;stroke-dasharray:8 7;fill:none;";
 
   return `
-    ${k01SvgLine(p, ground, guideStyle)}
-    ${k01SvgLine(ground, xBase, guideStyle)}
-    ${k01SvgLine(ground, yBase, guideStyle)}
+    ${
+      showGuides
+        ? `
+          ${k01SvgLine(p, ground, guideStyle)}
+          ${k01SvgLine(ground, xProjection, guideStyle)}
+          ${k01SvgLine(ground, yProjection, guideStyle)}
 
-    <circle
-      cx="${ground.x}"
-      cy="${ground.y}"
-      r="4"
-      style="fill:#e63946;">
-    </circle>
+          <circle
+            cx="${ground.x}"
+            cy="${ground.y}"
+            r="4"
+            style="fill:#e63946;">
+          </circle>
+        `
+        : ""
+    }
 
     <circle
       cx="${p.x}"
       cy="${p.y}"
-      r="15"
-      style="fill:none;stroke:#e63946;stroke-width:3;opacity:0.3;">
+      r="14"
+      style="
+        fill:none;
+        stroke:#e63946;
+        stroke-width:3;
+        opacity:0.28;
+      ">
     </circle>
 
     <circle
       cx="${p.x}"
       cy="${p.y}"
       r="8"
-      style="fill:#e63946;stroke:white;stroke-width:2;">
+      style="
+        fill:#e63946;
+        stroke:white;
+        stroke-width:2;
+      ">
     </circle>
 
     <text
@@ -296,27 +345,40 @@ function k01PointDrawing(point, label){
 
 /* -----------------------------------------
    Gesamte Grafik
+   easy  = Gitter + Hilfslinien
+   medium = Kanten + Hilfslinien
+   hard  = Kanten ohne Hilfslinien
    ----------------------------------------- */
 
 function k01CubeSvg(point, mode = "easy", label = "A"){
+  const showGrid = mode === "easy";
+  const showGuides = mode !== "hard";
+
   return `
-    <div style="max-width:760px;margin:18px auto;">
+    <div style="
+      max-width:720px;
+      margin:18px auto;
+      padding:14px;
+      background:white;
+      border:1px solid #e5ded3;
+      border-radius:18px;
+    ">
 
       <svg
-        viewBox="0 0 650 540"
-        style="display:block;width:100%;height:auto;"
+        viewBox="0 0 650 520"
+        style="
+          display:block;
+          width:100%;
+          height:auto;
+        "
         role="img"
         aria-label="Koordinatenwürfel mit Punkt ${label}">
 
-        ${
-          mode === "easy"
-            ? k01FullGrid()
-            : ""
-        }
+        ${showGrid ? k01FullGrid() : ""}
 
         ${k01CubeEdges()}
         ${k01Axes()}
-        ${k01PointDrawing(point, label)}
+        ${k01PointDrawing(point, label, showGuides)}
 
       </svg>
 
@@ -328,8 +390,10 @@ function k01CubeSvg(point, mode = "easy", label = "A"){
       ">
         ${
           mode === "easy"
-            ? "Alle Gitterlinien sind eingezeichnet."
-            : "Nur die Achsen und Aussenkanten sind eingezeichnet."
+            ? "Vollständiges Gitter mit Hilfslinien."
+            : mode === "medium"
+              ? "Nur Aussenkanten mit Hilfslinien."
+              : "Nur Aussenkanten ohne Hilfslinien."
         }
       </p>
 
@@ -339,7 +403,7 @@ function k01CubeSvg(point, mode = "easy", label = "A"){
 
 
 /* =========================================
-   Aufgaben
+   Generator 1 · Einfach
    ========================================= */
 
 function genK01Easy(){
@@ -350,7 +414,7 @@ function genK01Easy(){
     badge: "K01 · Koordinaten ablesen · einfach",
 
     ziel:
-      "Die Koordinaten eines Punktes im vollständigen räumlichen Gitter ablesen.",
+      "Die Koordinaten eines Punktes im räumlichen Gitter ablesen.",
 
     text: `
       <p>
@@ -384,22 +448,26 @@ function genK01Easy(){
 }
 
 
-function genK01Hard(){
+/* =========================================
+   Generator 2 · Mittel
+   ========================================= */
+
+function genK01Medium(){
   const point = k01RandomPoint();
   const label = pick(["A", "B", "C"]);
 
   return {
-    badge: "K01 · Koordinaten ablesen · schwierig",
+    badge: "K01 · Koordinaten ablesen · mittel",
 
     ziel:
-      "Die Koordinaten eines Punktes ohne vollständiges räumliches Gitter ablesen.",
+      "Die Koordinaten eines Punktes mit wenigen Hilfslinien ablesen.",
 
     text: `
       <p>
-        Im Würfel sind nur die Achsen und Aussenkanten sichtbar.
+        Im Würfel sind nur die Aussenkanten und Hilfslinien sichtbar.
       </p>
 
-      ${k01CubeSvg(point, "hard", label)}
+      ${k01CubeSvg(point, "medium", label)}
     `,
 
     ask:
@@ -425,6 +493,56 @@ function genK01Hard(){
   };
 }
 
+
+/* =========================================
+   Generator 3 · Schwer
+   ========================================= */
+
+function genK01Hard(){
+  const point = k01RandomPoint();
+  const label = pick(["A", "B", "C"]);
+
+  return {
+    badge: "K01 · Koordinaten ablesen · schwierig",
+
+    ziel:
+      "Die Koordinaten eines Punktes ohne eingezeichnete Hilfslinien bestimmen.",
+
+    text: `
+      <p>
+        Im Würfel sind nur die Aussenkanten sichtbar.
+      </p>
+
+      ${k01CubeSvg(point, "hard", label)}
+    `,
+
+    ask:
+      `Bestimme die Koordinaten von ${label}.`,
+
+    answer:
+      coordinateAnswer(point.x, point.y, point.z),
+
+    hint1:
+      "Stelle dir die senkrechte Projektion auf die Grundfläche vor.",
+
+    hint2:
+      "Bestimme zuerst x und y, danach z.",
+
+    hint3:
+      `Die z-Koordinate beträgt ${point.z}.`,
+
+    solution: `
+      <strong>
+        ${label} (${point.x} / ${point.y} / ${point.z})
+      </strong>
+    `
+  };
+}
+
+
+/* =========================================
+   Generator 4 · Fehlende Koordinate
+   ========================================= */
 
 function genK01Missing(){
   const point = k01RandomPoint();
@@ -474,7 +592,7 @@ function genK01Missing(){
 
     hint2:
       missing === "z"
-        ? "Die z-Koordinate zeigt die Höhe."
+        ? "Die z-Koordinate beschreibt die Höhe."
         : "Lies die Koordinate auf der Grundfläche ab.",
 
     hint3:
@@ -497,10 +615,11 @@ TRAINERS["koordinaten"] = {
   title: "K01 · Räumliche Koordinaten",
 
   info:
-    "Koordinaten in einem räumlichen Gitter ablesen und ergänzen.",
+    "Koordinaten in einem Würfel ablesen und ergänzen.",
 
   generators: [
     genK01Easy,
+    genK01Medium,
     genK01Hard,
     genK01Missing
   ]
