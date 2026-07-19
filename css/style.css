@@ -701,3 +701,119 @@ code{
   text-align:center;
   font-size:.95rem;
 }
+
+.coordinate-svg-wrap{
+  max-width: 720px;
+  margin: 18px auto;
+}
+
+.coordinate-svg{
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.coord-ground{
+  fill: #eef5e8;
+  stroke: #718266;
+  stroke-width: 2;
+}
+
+.coord-grid-line{
+  stroke: #b7c5ae;
+  stroke-width: 1.2;
+}
+
+.coord-axis{
+  stroke: #263238;
+  stroke-width: 3;
+  marker-end: url(#coord-arrow);
+}
+
+.coord-arrow-head{
+  fill: #263238;
+}
+
+.coord-axis-number{
+  fill: #455a64;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.coord-axis-label{
+  fill: #17252a;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.coord-origin-label{
+  fill: #455a64;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.coord-height-mark{
+  stroke: #263238;
+  stroke-width: 2;
+}
+
+.coord-guide{
+  stroke: #506d7a;
+  stroke-width: 1.8;
+  stroke-dasharray: 7 6;
+}
+
+.coord-guide-height{
+  stroke-width: 2.2;
+}
+
+.coord-ground-point{
+  fill: #506d7a;
+}
+
+.coord-point{
+  fill: #e63946;
+  stroke: white;
+  stroke-width: 2;
+}
+
+.coord-point-ring{
+  fill: none;
+  stroke: #e63946;
+  stroke-width: 2;
+  opacity: 0.45;
+}
+
+.coord-point-label{
+  fill: #a4161a;
+  font-size: 23px;
+  font-weight: 900;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 4px;
+}
+
+.coord-mountains{
+  fill: #dce8d5;
+  stroke: #9caf91;
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+
+.coordinate-note{
+  margin: 6px 0 0;
+  text-align: center;
+  color: #52606d;
+  font-size: 0.95rem;
+}
+
+.coordinate-given{
+  margin: 14px 0;
+  padding: 12px 16px;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.25rem;
+  background: #f8fafc;
+}
